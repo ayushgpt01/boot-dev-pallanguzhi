@@ -2,7 +2,7 @@
 
 - [x] Initialize PixiJS app and add to canvas
 
-- [ ] Render 14 pits (6 per player + 2 stores)
+- [x] Render 14 pits (6 per player + 2 stores)
 
 - [ ] Draw seeds dynamically based on game state
 
