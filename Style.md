@@ -8,9 +8,7 @@ This document defines the **visual style**, **UI behavior**, and **interaction p
 
 _What kind of aesthetic should the game have? (e.g. traditional, modern, flat, cartoonish)_
 
-- [ ] White_wolf_mkl:
-- [ ] Sanjay:
-- [ ] Crux:
+- Traditional (Using vintage paper style to match the old game vibe)
 
 ---
 
@@ -82,9 +80,7 @@ _Suggestions for music or sound effects_
 
 _Links or screenshots of games or styles you like for reference_
 
-- White_wolf_mkl:
-- Sanjay:
-- Crux:
+Vintage brown and beige paper. Reference - https://www.canva.com/design/DAGuMklSOoM/O8MkEV9OJk_Q8LF5MvGsMg/
 
 ---
 
@@ -92,7 +88,7 @@ _Links or screenshots of games or styles you like for reference_
 
 _We’ll mark items as "agreed" here after group review_
 
-- Theme: [ ]
+- Theme: [X]
 - Colors: [ ]
 - Font: [ ]
 - Art Style: [ ]
