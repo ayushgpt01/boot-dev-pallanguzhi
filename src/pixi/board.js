@@ -51,25 +51,70 @@ function createPit(x, y, radius, seedAssets) {
 
   pit.addChild(circle);
 
+  // for (let i = 0; i < 5; i++) {
+  //   const angle = Math.random() * Math.PI * 2;
+  //   const r = Math.random() * (radius - 15);
+  //   const sx = Math.cos(angle) * r;
+  //   const sy = Math.sin(angle) * r;
+
+  //   const seedSprite = Sprite.from(
+  //     Object.values(seedAssets)[
+  //       Math.floor(Math.random() * Object.keys(seedAssets).length)
+  //     ]
+  //   );
+
+  //   seedSprite.anchor.set(0.5);
+  //   seedSprite.scale.set(0.15);
+
+  //   seedSprite.x = sx;
+  //   seedSprite.xy = sy;
+
+  //   pit.addChild(seedSprite);
+  // }
+
+  const placedSeeds = [];
+
   for (let i = 0; i < 5; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const r = Math.random() * (radius - 15);
-    const sx = Math.cos(angle) * r;
-    const sy = Math.sin(angle) * r;
+    let placed = false;
+    let attempts = 0;
 
-    const seedSprite = Sprite.from(
-      Object.values(seedAssets)[
-        Math.floor(Math.random() * Object.keys(seedAssets).length)
-      ]
-    );
+    while (!placed && attempts < 10) {
+      attempts++;
+      const angle = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(Math.random()) * (radius - 15); // Better spread
+      const sx = Math.cos(angle) * r;
+      const sy = Math.sin(angle) * r;
 
-    seedSprite.anchor.set(0.5);
-    seedSprite.scale.set(0.15);
+      let tooClose = false;
+      for (const pos of placedSeeds) {
+        const dx = pos.x - sx;
+        const dy = pos.y - sy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 20) {
+          // Adjust min distance as needed
+          tooClose = true;
+          break;
+        }
+      }
 
-    seedSprite.x = sx;
-    seedSprite.xy = sy;
+      if (!tooClose) {
+        const seedSprite = Sprite.from(
+          Object.values(seedAssets)[
+            Math.floor(Math.random() * Object.keys(seedAssets).length)
+          ]
+        );
 
-    pit.addChild(seedSprite);
+        seedSprite.anchor.set(0.5);
+        seedSprite.scale.set(0.15);
+
+        seedSprite.x = sx;
+        seedSprite.y = sy;
+
+        pit.addChild(seedSprite);
+        placedSeeds.push({ x: sx, y: sy });
+        placed = true;
+      }
+    }
   }
 
   pit.x = x;
@@ -77,15 +122,3 @@ function createPit(x, y, radius, seedAssets) {
 
   return pit;
 }
-
-// function createSeed(x, y) {
-//   const seed = new Graphics()
-//     .circle(0, 0, 8)
-//     .fill({ color: 0x6d4c41 })
-//     .stroke({ width: 2, color: 0x3e2723 });
-
-//   seed.x = x;
-//   seed.y = y;
-
-//   return seed;
-// }
