@@ -2,8 +2,13 @@
 
 ## In-Progress
 
-- [ ] Reduce the size of the seeds
-- [ ] Put five seeds on each pit
+- [ ] Interactivity
+  - [ ] Pick the shells from one pit and put then in the following pits
+    - [ ] Click a pit → pick up all seeds from it.
+    - [ ] Animate moving seeds into the next pits (anti-clockwise).
+    - [ ] Drop one seed per pit in sequence.
+
+⸻
 
 ## Tasks
 
@@ -45,3 +50,8 @@
 ? What is the seed supposed to look like
 
 #### General Notes
+
+#### Completed
+
+- [x] Reduce the size of the seeds
+- [x] Put five seeds on each pit
