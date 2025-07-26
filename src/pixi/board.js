@@ -1,7 +1,12 @@
 import { Container, Graphics, Sprite, Assets } from "pixi.js";
 
+// - [ ] Make the game go anti-clock wise
+
 const pits = [];
 let seedIdCounter = 0;
+let playerA_score = 0;
+let playerB_score = 0;
+let turn = null;
 
 export function createBoard(app, seedAssets) {
   const container = new Container();
@@ -128,72 +133,29 @@ function createPit(x, y, radius, seedAssets) {
   return pit;
 }
 
-// function handlePitClick(pit) {
-//   const index = pits.indexOf(pit);
-//   if (index == -1) return;
-
-//   if (seedsInHand.length === 0) {
-//     pickSeeds(pit, index);
-//   } else {
-//     placeSeed(pit, index);
-//   }
-// }
-
-function pickSeeds(pit, index) {
-  const seedSprites = pit.children.slice(1);
-
-  if (seedSprites.length === 0) {
-    console.log("No seeds to pick.");
-    return;
-  }
-
-  seedsInHand = seedSprites;
-  for (const seed of seedSprites) {
-    pit.removeChild(seed);
-  }
-
-  currentPitIndex = index;
-  nextAllowedPitIndex = (index + 1) % pits.length;
-
-  console.log(`Picked ${seedsInHand.length} seeds from pit ${index}`);
-}
-
-function placeSeed(pit, index) {
-  if (index !== nextAllowedPitIndex) {
-    console.log(`Invalid move. Place in pit ${nextAllowedPitIndex}`);
-    return;
-  }
-
-  const seed = seedsInHand.shift();
-  if (!seed) return;
-
-  const radius = 60;
-  const angle = Math.random() * Math.PI * 2;
-  const r = Math.sqrt(Math.random()) * (radius - 15);
-  seed.x = Math.cos(angle) * r;
-  seed.y = Math.sin(angle) * r;
-
-  pit.addChild(seed);
-  console.log(`Placed seed ${seed.seedId} into pit ${index}`);
-
-  if (seedsInHand.length > 0) {
-    nextAllowedPitIndex = (index + 1) % pits.length;
-  } else {
-    console.log("All seeds placed. Turn done.");
-    currentPitIndex = null;
-    nextAllowedPitIndex = null;
-
-    // Check captures, change turns etc.
-    // - [ ] checkCapturesOrSwitchTurn(index)
-  }
-}
-
 let seedsInHand = [];
 let currentPitIndex = null;
 let nextAllowedPitIndex = null;
+let isEmpty = false;
 
 function distributeSeeds(clickedPit) {
   const clickedIndex = pits.indexOf(clickedPit);
+
+  console.log("seedsInHand.length === 0: ", seedsInHand.length === 0);
+  console.log("isEmpty: ", isEmpty);
+
+  if (isEmpty && seedsInHand.length === 0) {
+    console.log("YOUR TURN IS DONE.");
+    captureSeeds();
+    switchTurn();
+    return;
+  }
+
+  if (clickedPit.children.length === 1 && seedsInHand.length === 0) {
+    isEmpty = true;
+  }
+
+  if (clickedIndex === undefined || clickedIndex === -1) return;
   if (clickedIndex === -1) return;
 
   // If no seeds in hand, pick up from clicked pit
@@ -208,7 +170,7 @@ function distributeSeeds(clickedPit) {
     }
 
     currentPitIndex = clickedIndex;
-    nextAllowedPitIndex = (clickedIndex + 1) % pits.length;
+    nextAllowedPitIndex = (clickedIndex - 1 + pits.length) % pits.length;
     console.log(
       `Picked up ${seedsInHand.length} seeds from pit ${clickedIndex}`
     );
@@ -217,8 +179,6 @@ function distributeSeeds(clickedPit) {
 
   // Seeds are in hand: only allow placing in correct next pit
   if (clickedIndex !== nextAllowedPitIndex) {
-    console.log("clickedIndex: ", clickedIndex);
-    console.log(`Invalid move. Must place in pit ${nextAllowedPitIndex}`);
     return;
   }
 
@@ -234,15 +194,54 @@ function distributeSeeds(clickedPit) {
   seed.y = Math.sin(angle) * r;
 
   clickedPit.addChild(seed);
-  console.log(`Placed seed ${seed.seedId} into pit ${clickedIndex}`);
 
   // If seeds remain in hand, update nextAllowedPitIndex
   if (seedsInHand.length > 0) {
-    nextAllowedPitIndex = (clickedIndex + 1) % pits.length;
+    nextAllowedPitIndex = (clickedIndex - 1 + pits.length) % pits.length;
   } else {
-    // Finished placing
-    console.log("All seeds placed. Ready for next turn.");
+    const lastPit = clickedPit;
+    const lastIndex = clickedIndex;
+    const lastPitSeeds = lastPit.children.slice(1);
+
+    let didCapture = false;
+
+    if (lastPitSeeds.length === 1) {
+      const nextIndex = (lastIndex + 1) % pits.length;
+      const nextPit = pits[nextIndex];
+      const nextPitSeeds = nextPit.children.slice(1);
+
+      const oppositeIndex = pits.length - 1 - nextIndex;
+      const oppotisePit = pits[oppositeIndex];
+      const oppotisePitSeeds = oppotisePit.children.slice(1);
+
+      let captured = [];
+
+      if (nextPitSeeds.length > 0) {
+        captured = captured.concat(nextPitSeeds);
+        for (const seed of nextPitSeeds) {
+          nextPit.removeChild(seed);
+        }
+      }
+
+      if (oppotisePitSeeds.length > 0) {
+        captured = captured.concat(oppotisePitSeeds);
+        for (const seed of oppotisePitSeeds) {
+          oppotisePit.removeChild(seed);
+        }
+      }
+    }
+
     currentPitIndex = null;
     nextAllowedPitIndex = null;
   }
+}
+
+// to give control back and forth between two players
+function switchTurn() {
+  console.log("It's you turn Player B");
+}
+
+// function to capture seeds that the user has won
+function captureSeeds() {
+  console.log("CAPTURING SEEDS");
 }

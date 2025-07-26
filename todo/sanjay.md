@@ -1,5 +1,10 @@
 # Todos
 
+## Fixes
+
+- [ ] make the game logic move anti-clock wise
+- [ ] when having no seeds in hand should only be able to pick the seeds from the next pit from where the last seed was placed. Curretly can pick up seeds from any pit out there.
+
 ## In-Progress
 
 - [ ] Interactivity
