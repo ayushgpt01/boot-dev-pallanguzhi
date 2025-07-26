@@ -31,16 +31,31 @@ export function createBoard(app, seedAssets) {
   const topRowY = boardY + 90;
   const bottomRowY = boardY + boardHeight - 90;
 
+  const topPits = [];
+  const bottomPits = [];
+
   for (let i = 0; i < 7; i++) {
     const x = startX + i * spacingX;
 
     const pitTop = createPit(x, topRowY, pitRadius, seedAssets);
-    pits.push(pitTop);
     const pitBottom = createPit(x, bottomRowY, pitRadius, seedAssets);
-    pits.push(pitBottom);
+
+    topPits.push(pitTop);
+    bottomPits.push(pitBottom);
+
+    // pits.push(pitTop);
+    // pits.push(pitBottom);
 
     container.addChild(pitTop);
     container.addChild(pitBottom);
+  }
+
+  for (let i = 0; i < 7; i++) {
+    pits.push(topPits[i]);
+  }
+
+  for (let i = 6; i >= 0; i--) {
+    pits.push(bottomPits[i]);
   }
 
   return container;
@@ -113,16 +128,16 @@ function createPit(x, y, radius, seedAssets) {
   return pit;
 }
 
-function handlePitClick(pit) {
-  const index = pits.indexOf(pit);
-  if (index == -1) return;
+// function handlePitClick(pit) {
+//   const index = pits.indexOf(pit);
+//   if (index == -1) return;
 
-  if (seedsInHand.length === 0) {
-    pickSeeds(pit, index);
-  } else {
-    placeSeed(pit, index);
-  }
-}
+//   if (seedsInHand.length === 0) {
+//     pickSeeds(pit, index);
+//   } else {
+//     placeSeed(pit, index);
+//   }
+// }
 
 function pickSeeds(pit, index) {
   const seedSprites = pit.children.slice(1);
@@ -202,6 +217,7 @@ function distributeSeeds(clickedPit) {
 
   // Seeds are in hand: only allow placing in correct next pit
   if (clickedIndex !== nextAllowedPitIndex) {
+    console.log("clickedIndex: ", clickedIndex);
     console.log(`Invalid move. Must place in pit ${nextAllowedPitIndex}`);
     return;
   }
