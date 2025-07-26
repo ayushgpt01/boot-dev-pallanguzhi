@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Assets, Text } from "pixi.js";
+import { Container, Graphics, Sprite, Assets, Text, TextStyle } from "pixi.js";
 
 // - [x] Make the game go anti-clock wise
 // - [ ] Add capturing logic
@@ -69,40 +69,46 @@ export function createBoard(app, seedAssets) {
     pits.push(bottomPits[i]);
   }
 
-  const playerA_name = new Text("Player A", {
-    fill: "#ffffff",
-    fontSize: 24,
-    fontFamily: "Cinzel",
-  });
-  playerA_name.x = boardX + 20;
-  playerA_name.y = boardY - 40;
-
-  const playerB_name = new Text("Player B", {
-    fill: "#ffffff",
-    fontSize: 24,
-    fontFamily: "Cinzel",
+  const style = new TextStyle({
+    fill: 0x000000,
+    fontSize: 72,
+    fontFamily: "Cinzel-SemiBold",
   });
 
-  playerB_name.x = boardX + boardWidth - 120;
-  playerB_name.y = boardY + boardHeight + 10;
-
-  scoreTextA = new Text(`Score: ${playerA_score}`, {
-    fill: "#ffffff",
-    fontSize: 20,
+  const playerA_name = new Text({
+    text: "Player A",
+    style,
   });
-  scoreTextA.x = boardX + 20;
-  scoreTextA.y = boardY - 10;
 
-  scoreTextB = new Text(`Score: ${playerB_score}`, {
-    fill: "#ffffff",
-    fontSize: 20,
+  playerA_name.x = boardX - 350;
+  playerA_name.y = boardY - 10;
+
+  const playerB_name = new Text({
+    text: "Player B",
+    style,
   });
-  scoreTextB.x = boardX + boardWidth - 120;
-  scoreTextB.y = boardY + boardHeight + 40;
 
-  turnText = new Text("Turn: Player A", {
-    fill: "#ffeb3b",
-    fontSize: 20,
+  playerB_name.x = boardX + boardWidth + 20;
+  playerB_name.y = boardY + boardHeight - 15;
+
+  scoreTextA = new Text({
+    text: `Score: ${playerA_score}`,
+    style,
+  });
+
+  scoreTextA.x = boardX - 350;
+  scoreTextA.y = boardY + 70;
+
+  scoreTextB = new Text({
+    text: `Score: ${playerB_score}`,
+    style,
+  });
+  scoreTextB.x = boardX + boardWidth + 20;
+  scoreTextB.y = boardY + boardHeight + 50;
+
+  turnText = new Text({
+    text: "Turn: Player A",
+    style,
   });
   turnText.anchor.set(0.5);
   turnText.x = app.screen.width / 2;
@@ -126,7 +132,7 @@ function createPit(x, y, radius, seedAssets) {
   pit.cursor = "pointer";
 
   pit.on("pointerover", () => {
-    circle.tint = 0xffff99;
+    circle.tint = 0x584d47;
   });
 
   pit.on("pointerout", () => {
