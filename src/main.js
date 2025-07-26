@@ -13,15 +13,14 @@ const gameState = "beginning";
   const app = new Application();
 
   await app.init({ background: "#4E342E", resizeTo: window });
-  // await app.init({ resizeTo: window });
 
   document.getElementById("pixi-container").appendChild(app.canvas);
 
-  // const bg = await Assets.load("/images/background.webp");
-  // const bgSprite = PIXI.Sprite.from(bg);
-  // bgSprite.width = app.screen.width;
-  // bgSprite.height = app.screen.height;
-  // app.stage.addChild(bgSprite);
+  const bg = await Assets.load("/images/background.webp");
+  const bgSprite = Sprite.from(bg);
+  bgSprite.width = app.screen.width;
+  bgSprite.height = app.screen.height;
+  app.stage.addChild(bgSprite);
 
   const seed = await Assets.load("/assets/seed.svg");
   const seedSprite = Sprite.from(seed);
