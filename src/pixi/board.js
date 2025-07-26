@@ -1,6 +1,6 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite, Assets } from "pixi.js";
 
-export function createBoard(app) {
+export function createBoard(app, seedAssets) {
   const container = new Container();
 
   const boardWidth = 724 * 1.5;
@@ -31,15 +31,8 @@ export function createBoard(app) {
   for (let i = 0; i < 7; i++) {
     const x = startX + i * spacingX;
 
-    const pitTop = new Graphics()
-      .circle(x, topRowY, pitRadius)
-      .fill({ color: 0xffffff })
-      .stroke({ width: 4, color: 0x000000 });
-
-    const pitBottom = new Graphics()
-      .circle(x, bottomRowY, pitRadius)
-      .fill({ color: 0xffffff })
-      .stroke({ width: 4, color: 0x000000 });
+    const pitTop = createPit(x, topRowY, pitRadius, seedAssets);
+    const pitBottom = createPit(x, bottomRowY, pitRadius, seedAssets);
 
     container.addChild(pitTop);
     container.addChild(pitBottom);
@@ -47,3 +40,52 @@ export function createBoard(app) {
 
   return container;
 }
+
+function createPit(x, y, radius, seedAssets) {
+  const pit = new Container();
+
+  const circle = new Graphics()
+    .circle(0, 0, radius)
+    .fill({ color: 0xffffff })
+    .stroke({ width: 4, color: 0x000000 });
+
+  pit.addChild(circle);
+
+  for (let i = 0; i < 5; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const r = Math.random() * (radius - 15);
+    const sx = Math.cos(angle) * r;
+    const sy = Math.sin(angle) * r;
+
+    const seedSprite = Sprite.from(
+      Object.values(seedAssets)[
+        Math.floor(Math.random() * Object.keys(seedAssets).length)
+      ]
+    );
+
+    seedSprite.anchor.set(0.5);
+    seedSprite.scale.set(0.15);
+
+    seedSprite.x = sx;
+    seedSprite.xy = sy;
+
+    pit.addChild(seedSprite);
+  }
+
+  pit.x = x;
+  pit.y = y;
+
+  return pit;
+}
+
+// function createSeed(x, y) {
+//   const seed = new Graphics()
+//     .circle(0, 0, 8)
+//     .fill({ color: 0x6d4c41 })
+//     .stroke({ width: 2, color: 0x3e2723 });
+
+//   seed.x = x;
+//   seed.y = y;
+
+//   return seed;
+// }

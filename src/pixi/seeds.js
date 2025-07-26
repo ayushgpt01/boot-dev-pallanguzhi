@@ -2,11 +2,12 @@ import { Sprite, Assets } from "pixi.js";
 
 export async function createSeeds(app) {
   const seedPaths = [
-    "/assets/seed.svg",
+    // "/assets/seed.svg",
     "/assets/seeds/seed_one.png",
     "/assets/seeds/seed_two.png",
     "/assets/seeds/seed_three.png",
     "/assets/seeds/seed_four.png",
+    "/assets/seeds/seed_one.png",
   ];
 
   const sprites = [];

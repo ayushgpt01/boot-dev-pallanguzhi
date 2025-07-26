@@ -1,5 +1,12 @@
 # Todos
 
+## In-Progress
+
+- [ ] Reduce the size of the seeds
+- [ ] Put five seeds on each pit
+
+## Tasks
+
 - [x] Initialize PixiJS app and add to canvas
 
 - [ ] board
@@ -19,12 +26,22 @@
 
 - [ ] Animate seed movement across pits
 
-## Tasks
+## Mini-Tasks
 
 - [x] Download the font and put into inside public/fonts
 - [ ] Add Favicon
 - [ ] pixi for different functionality
 
-### Questions
+## Sprites
+
+### Seeds
+
+- [ ] Making the seeds fill into each pit ( this is what's supposed to happen on the start of the game.)
+
+### Pit
+
+#### Questions
 
 ? What is the seed supposed to look like
+
+#### General Notes
