@@ -24,6 +24,19 @@
           "src": "/assets/seeds/seed_one.png"
         }
       ]
+    },
+    {
+      "name": "backgrounds",
+      "assets": [
+        {
+          "alias": "background_one",
+          "src": "/images/backgrounds/background_one.webp"
+        },
+        {
+          "alias": "background_two",
+          "src": "/images/backgrounds/background_two.webp"
+        }
+      ]
     }
   ]
 }

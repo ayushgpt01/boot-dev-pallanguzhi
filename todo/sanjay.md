@@ -60,3 +60,17 @@
 
 - [x] Reduce the size of the seeds
 - [x] Put five seeds on each pit
+
+Use PixiJS to visually render the game board, pits, and seeds. Ensure the rendering is in sync with the game state. Add basic interactivity for clicking pits. (For now leave empty functions)
+
+Checklist:
+
+- [x] Initialize PixiJS app and add to canvas
+
+- [x] Render 14 pits (6 per player + 2 stores)
+
+- [x] Draw seeds dynamically based on game state
+
+- [x] Add interactivity: highlight pits on hover, handle pit clicks
+
+- [ ] Animate seed movement across pits

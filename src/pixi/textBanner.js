@@ -2,9 +2,10 @@ import { TextStyle, Text } from "pixi.js";
 
 export function createTitleText(app) {
   const style = new TextStyle({
-    fill: 0xffffff,
+    // fill: 0xffffff,
+    fill: 0x000000,
     fontSize: 72,
-    fontFamily: "Sans Serif",
+    fontFamily: "Cinzel",
   });
 
   const text = new Text({

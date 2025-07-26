@@ -1,14 +1,20 @@
-import { Container, Graphics, Sprite, Assets } from "pixi.js";
+import { Container, Graphics, Sprite, Assets, Text } from "pixi.js";
 
-// - [ ] Make the game go anti-clock wise
+// - [x] Make the game go anti-clock wise
+// - [ ] Add capturing logic
+// what it should do is just remove the captured number of seeds from the board
+// (i.e., the pit next to the empty one and the pit on the other side of the same pit). and update the score of the player with the number of seeds captured.
 
 const pits = [];
 let seedIdCounter = 0;
 let playerA_score = 0;
 let playerB_score = 0;
 let turn = null;
+let scoreTextA, scoreTextB, turnText;
 
 export function createBoard(app, seedAssets) {
+  turn = "A";
+
   const container = new Container();
 
   const boardWidth = 724 * 1.5;
@@ -63,6 +69,53 @@ export function createBoard(app, seedAssets) {
     pits.push(bottomPits[i]);
   }
 
+  const playerA_name = new Text("Player A", {
+    fill: "#ffffff",
+    fontSize: 24,
+    fontFamily: "Cinzel",
+  });
+  playerA_name.x = boardX + 20;
+  playerA_name.y = boardY - 40;
+
+  const playerB_name = new Text("Player B", {
+    fill: "#ffffff",
+    fontSize: 24,
+    fontFamily: "Cinzel",
+  });
+
+  playerB_name.x = boardX + boardWidth - 120;
+  playerB_name.y = boardY + boardHeight + 10;
+
+  scoreTextA = new Text(`Score: ${playerA_score}`, {
+    fill: "#ffffff",
+    fontSize: 20,
+  });
+  scoreTextA.x = boardX + 20;
+  scoreTextA.y = boardY - 10;
+
+  scoreTextB = new Text(`Score: ${playerB_score}`, {
+    fill: "#ffffff",
+    fontSize: 20,
+  });
+  scoreTextB.x = boardX + boardWidth - 120;
+  scoreTextB.y = boardY + boardHeight + 40;
+
+  turnText = new Text("Turn: Player A", {
+    fill: "#ffeb3b",
+    fontSize: 20,
+  });
+  turnText.anchor.set(0.5);
+  turnText.x = app.screen.width / 2;
+  turnText.y = boardY - 50;
+
+  container.addChild(
+    playerA_name,
+    playerB_name,
+    scoreTextA,
+    scoreTextB,
+    turnText
+  );
+
   return container;
 }
 
@@ -71,11 +124,20 @@ function createPit(x, y, radius, seedAssets) {
 
   pit.eventMode = "static";
   pit.cursor = "pointer";
+
+  pit.on("pointerover", () => {
+    circle.tint = 0xffff99;
+  });
+
+  pit.on("pointerout", () => {
+    circle.tint = 0xffffff;
+  });
+
   pit.on("pointerdown", () => distributeSeeds(pit));
 
   const circle = new Graphics()
     .circle(0, 0, radius)
-    .fill({ color: 0xffffff })
+    .fill({ color: 0x8b6941 })
     .stroke({ width: 4, color: 0x000000 });
 
   pit.addChild(circle);
@@ -206,7 +268,7 @@ function distributeSeeds(clickedPit) {
     let didCapture = false;
 
     if (lastPitSeeds.length === 1) {
-      const nextIndex = (lastIndex + 1) % pits.length;
+      const nextIndex = (lastIndex - 1 + pits.length) % pits.length;
       const nextPit = pits[nextIndex];
       const nextPitSeeds = nextPit.children.slice(1);
 
@@ -229,19 +291,48 @@ function distributeSeeds(clickedPit) {
           oppotisePit.removeChild(seed);
         }
       }
+
+      // Update Score
+      if (captured.length > 0) {
+        if (turn === "A") {
+          playerA_score += captured.length;
+        } else {
+          playerB_score += captured.length;
+        }
+        updateScoreText();
+      }
+
+      didCapture = captured.length > 0;
     }
 
     currentPitIndex = null;
     nextAllowedPitIndex = null;
+    isEmpty = false;
+
+    if (!didCapture) {
+      switchTurn();
+    }
   }
 }
 
 // to give control back and forth between two players
 function switchTurn() {
   console.log("It's you turn Player B");
+  turn = turn === "A" ? "B" : "A";
+  updateTurnNext();
+  console.log(`Turn switched Now it's Player ${turn}'s turn.`);
 }
 
 // function to capture seeds that the user has won
 function captureSeeds() {
   console.log("CAPTURING SEEDS");
+}
+
+function updateScoreText() {
+  scoreTextA.text = `Score: ${playerA_score}`;
+  scoreTextB.text = `Score: ${playerB_score}`;
+}
+
+function updateTurnNext() {
+  turnText.text = `Turn: Player ${turn}`;
 }
