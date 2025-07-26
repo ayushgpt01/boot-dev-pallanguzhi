@@ -23,15 +23,23 @@ export function createBoard(app, seedAssets) {
   const boardY = 250;
 
   const board = new Graphics()
-    .rect(boardX, boardY, boardWidth, boardHeight)
+    // .rect(boardX, boardY, boardWidth, boardHeight)
+    .roundRect(boardX, boardY, boardWidth, boardHeight, 20)
     .fill({ color: 0x8d6e63 })
     .stroke({ width: 10, color: 0x5d4037 });
 
   // Divider bar
   const divider = new Graphics()
-    .rect(boardX + 10, app.screen.height / 2 - 4 + 18, boardWidth - 20, 8)
-    .fill({ color: 0x4e342e })
-    .stroke({ width: 2, color: 0x3e2723 });
+    // .rect(boardX + 10, app.screen.height / 2 - 4 + 18, boardWidth - 20, 8)
+    .roundRect(
+      boardX + 10,
+      app.screen.height / 2 - 4 + 18,
+      boardWidth - 20,
+      8,
+      4
+    )
+    .fill({ color: 0x4e342e });
+  // .stroke({ width: 2, color: 0x3e2723 });
 
   app.stage.addChild(board);
   app.stage.addChild(divider);
@@ -99,12 +107,24 @@ export function createBoard(app, seedAssets) {
   scoreTextA.x = boardX - 350;
   scoreTextA.y = boardY + 70;
 
+  const bgPlateA = new Graphics()
+    .roundRect(scoreTextA.x - 20, scoreTextA.y - 10, 180, 60, 12)
+    .fill({ color: 0x000000, alpha: 0.4 });
+  container.addChild(bgPlateA);
+  container.setChildIndex(bgPlateA, 0);
+
   scoreTextB = new Text({
     text: `Score: ${playerB_score}`,
     style,
   });
   scoreTextB.x = boardX + boardWidth + 20;
   scoreTextB.y = boardY + boardHeight + 50;
+
+  const bgPlateB = new Graphics()
+    .roundRect(scoreTextB.x - 20, scoreTextB.y - 10, 180, 60, 12)
+    .fill({ color: 0x000000, alpha: 0.4 });
+  container.addChild(bgPlateB);
+  container.setChildIndex(bgPlateB, 0);
 
   turnText = new Text({
     text: "Turn: Player A",
@@ -113,6 +133,12 @@ export function createBoard(app, seedAssets) {
   turnText.anchor.set(0.5);
   turnText.x = app.screen.width / 2;
   turnText.y = boardY - 50;
+
+  const bgTurn = new Graphics()
+    .roundRect(turnText.x - 180, turnText.y - 35, 360, 70, 20)
+    .fill({ color: 0x000000, alpha: 0.5 });
+  container.addChild(bgTurn);
+  container.setChildIndex(bgTurn, 0);
 
   container.addChild(
     playerA_name,
@@ -143,7 +169,7 @@ function createPit(x, y, radius, seedAssets) {
 
   const circle = new Graphics()
     .circle(0, 0, radius)
-    .fill({ color: 0x8b6941 })
+    .fill({ color: 0x795548 }) // 0x8b6941
     .stroke({ width: 4, color: 0x000000 });
 
   pit.addChild(circle);
@@ -166,7 +192,7 @@ function createPit(x, y, radius, seedAssets) {
         const dx = pos.x - sx;
         const dy = pos.y - sy;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 20) {
+        if (dist < 25) {
           // Adjust min distance as needed
           tooClose = true;
           break;
