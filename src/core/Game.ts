@@ -1,58 +1,98 @@
-import { GameEvent, GameEventType, GameState } from '../types/GameTypes';
 import { Board } from './Board';
 import { Player } from './Player';
 
 export class Game {
-  board: Board;
-  players: [Player, Player];
-  activePlayer: number = 0;
-  state: GameState = 'playing';
+  private board: Board;
+  private currentPlayer: Player;
+  private players: Map<string, Player>;
+  private round: number;
+  private gamePhase: 'picking' | 'sowing' | 'ended';
+  private inHandBeads: number;
+  private distributionCount: number;
+  private lastSowPosition: Position | null;
 
-  onEvent?: (event: GameEvent) => void;
-
-  constructor(p1: Player, p2: Player) {
-    this.players = [p1, p2];
-    this.board = new Board();
+  constructor(player1: Player, player2: Player, config: GameConfig) {
+    this.board = new Board(config);
+    this.players = new Map([
+      ['player1', player1],
+      ['player2', player2]
+    ]);
+    this.currentPlayer = player1;
+    this.round = 1;
+    this.gamePhase = 'picking';
+    this.inHandBeads = 0;
+    this.distributionCount = 0;
+    this.lastSowPosition = null;
   }
 
-  async playTurn(): Promise<void> {
-    if (this.state !== 'playing') return;
-
-    const player = this.players[this.activePlayer];
-    const move = await player.getMove(this.board.clone());
-
-    const { nextPlayer } = this.board.sow(this.activePlayer, move);
-    this.activePlayer = nextPlayer;
-
-    this.emitEvent('move', { move, board: this.board.clone() });
-
-    if (this.board.isGameOver()) {
-      this.state = 'over';
-      this.emitEvent('game_over', {
-        winner: this.getWinner(),
-        finalScores: [...this.board.captured]
-      });
-    }
+  // Getters
+  getBoard(): Board {
+    return this.board;
+  }
+  getCurrentPlayer(): Player {
+    return this.currentPlayer;
+  }
+  getPlayers(): Map<string, Player> {
+    return this.players;
+  }
+  getRound(): number {
+    return this.round;
+  }
+  getGamePhase(): string {
+    return this.gamePhase;
+  }
+  getInHandBeads(): number {
+    return this.inHandBeads;
+  }
+  getDistributionCount(): number {
+    return this.distributionCount;
+  }
+  getLastSowPosition(): Position | null {
+    return this.lastSowPosition;
   }
 
-  pause(): void {
-    this.state = 'paused';
-    this.emitEvent('pause', {});
+  // Setters
+  setCurrentPlayer(player: Player): void {
+    this.currentPlayer = player;
+  }
+  setGamePhase(phase: 'picking' | 'sowing' | 'ended'): void {
+    this.gamePhase = phase;
+  }
+  setInHandBeads(count: number): void {
+    this.inHandBeads = count;
+  }
+  setDistributionCount(count: number): void {
+    this.distributionCount = count;
+  }
+  setLastSowPosition(position: Position | null): void {
+    this.lastSowPosition = position;
+  }
+  incrementDistribution(): void {
+    this.distributionCount++;
+  }
+  decrementInHandBeads(): void {
+    this.inHandBeads--;
   }
 
-  resume(): void {
-    if (this.state === 'paused') {
-      this.state = 'playing';
-      this.emitEvent('resume', {});
-    }
+  // State queries
+  isGameOver(): boolean {
+    return (
+      this.gamePhase === 'ended' ||
+      this.players.get('player1')!.getActivePitCount() === 0 ||
+      this.players.get('player2')!.getActivePitCount() === 0
+    );
   }
 
-  private getWinner(): number | null {
-    const [s1, s2] = this.board.captured;
-    return s1 > s2 ? 0 : s2 > s1 ? 1 : null;
+  switchPlayer(): void {
+    const player1 = this.players.get('player1')!;
+    const player2 = this.players.get('player2')!;
+    this.currentPlayer = this.currentPlayer === player1 ? player2 : player1;
   }
 
-  private emitEvent(type: GameEventType, data: any): void {
-    this.onEvent?.({ type, data });
+  reset(): void {
+    this.gamePhase = 'picking';
+    this.inHandBeads = 0;
+    this.distributionCount = 0;
+    this.lastSowPosition = null;
   }
 }

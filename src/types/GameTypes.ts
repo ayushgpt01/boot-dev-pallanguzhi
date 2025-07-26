@@ -1,7 +1,10 @@
-export type GameEventType = 'move' | 'pause' | 'resume' | 'game_over';
-export type GameState = 'playing' | 'paused' | 'over';
+interface Position {
+  player: 'player1' | 'player2';
+  pitIndex: number;
+}
 
-export interface GameEvent {
-  type: GameEventType;
-  data: any;
+interface GameConfig {
+  initialSeeds: number;
+  pitsPerPlayer: number;
+  maxDistributions: number;
 }
