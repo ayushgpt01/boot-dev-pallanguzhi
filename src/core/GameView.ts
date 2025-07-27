@@ -179,6 +179,11 @@ export class PixiGameView implements GameView {
         pitIndex: parseInt(pos[1])
       });
     }
+
+    const beadText = (pit as any).beadCountText;
+    if (beadText) {
+      beadText.text = `${targetCount}`;
+    }
   }
 
   private controller: GameController;

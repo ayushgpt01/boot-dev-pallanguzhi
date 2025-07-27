@@ -223,10 +223,28 @@ function createPit(
 
   const handSprite = Sprite.from(handAssets.hand_open);
   handSprite.anchor.set(0.5);
-  handSprite.scale.set(0.2);
+  handSprite.scale.set(1.5);
+  // handSprite.tint = 0xffc107;
+  handSprite.tint = 0xffd700;
   handSprite.position.set(0, -pitRadius - 20); // Above pit
   handSprite.visible = false;
   pit.addChild(handSprite);
+
+  const beadCountText = new Text({
+    text: `${initialSeeds}`,
+    style: new TextStyle({
+      fill: 0xffffff,
+      fontSize: 32,
+      fontWeight: 'bold',
+      align: 'center'
+    })
+  });
+  beadCountText.anchor.set(0.5);
+  beadCountText.position.set(0, pitRadius + 25);
+
+  (pit as any).beadCountText = beadCountText;
+
+  pit.addChild(beadCountText);
 
   // Store hand sprite in app for global cursor tracking
   (app as any)[`${player}-${pitIndex}-hand`] = handSprite;
