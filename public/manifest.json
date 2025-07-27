@@ -37,6 +37,32 @@
           "src": "/images/backgrounds/background_two.webp"
         }
       ]
+    },
+    {
+      "name": "hands",
+      "assets": [
+        {
+          "alias": "hand_open",
+          "src": "/assets/hand/hand_open.png"
+        },
+        {
+          "alias": "hand_closed",
+          "src": "/assets/hand/hand_closed.png"
+        }
+      ]
+    },
+    {
+      "name": "swords",
+      "assets": [
+        {
+          "alias": "tool_sword_a",
+          "src": "/assets/sword/tool_sword_a.png"
+        },
+        {
+          "alias": "tool_sword_b",
+          "src": "/assets/sword/tool_sword_b.png"
+        }
+      ]
     }
   ]
 }

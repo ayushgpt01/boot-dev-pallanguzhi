@@ -1,3 +1,4 @@
+import { Application, Texture } from 'pixi.js';
 import { Game } from './Game';
 import { GameView } from './GameView';
 import {
@@ -7,6 +8,10 @@ import {
   isHumanPlayer,
   Player
 } from './Player';
+
+interface SeedAssets {
+  [key: string]: Texture;
+}
 
 export class GameController {
   private gameState: Game;
@@ -19,6 +24,8 @@ export class GameController {
   constructor(
     player1: Player,
     player2: Player,
+    app: Application,
+    seedAssets: SeedAssets,
     gameView: GameView,
     config: GameConfig
   ) {

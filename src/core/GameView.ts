@@ -1,5 +1,16 @@
-import { Application, Sprite, Container, Graphics, Text } from 'pixi.js';
+import {
+  Application,
+  Sprite,
+  Container,
+  Graphics,
+  Text,
+  Texture
+} from 'pixi.js';
 import { Game } from './Game';
+
+interface SeedAssets {
+  [key: string]: Texture;
+}
 
 export interface GameView {
   render(gameState: Game): void;
@@ -17,12 +28,15 @@ export class PixiGameView implements GameView {
   private storeSprites: Map<string, Container> = new Map();
   private scoreTexts: Map<string, Text> = new Map();
   private turnText: Text | null = null;
+  private seedAssets: SeedAssets;
 
-  constructor(app: Application) {
+  constructor(app: Application, seedAssets: SeedAssets) {
     this.app = app;
+    this.seedAssets = seedAssets;
     this.setupBoard();
   }
 
+  // handled in board.ts
   private setupBoard(): void {
     // This will be called by the board creation in main.ts
     // The actual board setup is handled in the board.ts file
@@ -96,17 +110,46 @@ export class PixiGameView implements GameView {
     } else {
       // Add more seeds
       const toAdd = targetCount - currentCount;
+      const radius = 60;
+      const placedSeeds: { x: number; y: number }[] = [];
+
       for (let i = 0; i < toAdd; i++) {
-        // Create new seed sprite (placeholder)
-        const seedSprite = new Sprite();
-        // Position randomly within pit
-        const radius = 60;
-        const angle = Math.random() * Math.PI * 2;
-        const r = Math.sqrt(Math.random()) * (radius - 15);
-        seedSprite.x = Math.cos(angle) * r;
-        seedSprite.y = Math.sin(angle) * r;
-        seedSprite.scale.set(0.15);
-        pit.addChild(seedSprite);
+        let placed = false;
+        let attempts = 0;
+
+        while (!placed && attempts < 10) {
+          attempts++;
+          const angle = Math.random() * Math.PI * 2;
+          const r = Math.sqrt(Math.random()) * (radius - 15);
+          const sx = Math.cos(angle) * r;
+          const sy = Math.sin(angle) * r;
+
+          let tooClose = false;
+          for (const pos of placedSeeds) {
+            const dx = pos.x - sx;
+            const dy = pos.y - sy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 25) {
+              tooClose = true;
+              break;
+            }
+          }
+
+          if (!tooClose) {
+            const seedSprite = Sprite.from(
+              Object.values(this.seedAssets)[
+                Math.floor(Math.random() * Object.keys(this.seedAssets).length)
+              ]
+            );
+            seedSprite.anchor.set(0.5);
+            seedSprite.scale.set(0.15);
+            seedSprite.x = sx;
+            seedSprite.y = sy;
+            pit.addChild(seedSprite);
+            placedSeeds.push({ x: sx, y: sy });
+            placed = true;
+          }
+        }
       }
     }
   }
