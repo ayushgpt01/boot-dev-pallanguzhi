@@ -33,14 +33,22 @@
     </div>
   </div>
   <script type="module">
-  document.getElementById('start-btn').addEventListener('click', () => {
-    window.location.href = '/game.html'; 
-  });
+  const startBtn = document.getElementById('start-btn') as HTMLButtonElement | null;
+  const howToBtn = document.getElementById('how-to-btn') as HTMLButtonElement | null;
 
-  document.getElementById('how-to-btn').addEventListener('click', () => {
-    window.location.href = '/how-to.html'; 
-  });
-  </script>
+  if (startBtn) {
+    startBtn.addEventListener('click', () => {
+      window.location.href = '/game.html';
+    });
+  }
+
+  if (howToBtn) {
+    howToBtn.addEventListener('click', () => {
+      window.location.href = '/how-to.html';
+    });
+  }
+</script>
+
 
 <footer class="absolute bottom-0 w-full text-center text-[#4b2c18] pb-4 text-xl drop-shadow-[2px_2px_0_#f3f1db]">
   © 2025 Pallanguzhi. All rights reserved.
