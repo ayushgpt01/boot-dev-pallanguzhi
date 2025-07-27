@@ -2,18 +2,19 @@ import { GameClient } from './GameClient';
 import { GameView } from './GameView';
 import { MultiplayerGameController } from './MultiplayerController';
 
-export class GameApp {
+export class MultiplayerGameApp {
   private gameClient: GameClient;
   private gameController: MultiplayerGameController;
   // Use this for UI Updates
   // private gameView: GameView;
 
-  constructor(gameView: GameView) {
+  constructor(gameView: GameView, gameConfig: GameConfig, serverUrl: string) {
     // this.gameView = gameView;
-    this.gameClient = new GameClient(gameView);
+    this.gameClient = new GameClient(gameView, gameConfig, serverUrl);
     this.gameController = new MultiplayerGameController(
       this.gameClient,
-      gameView
+      gameView,
+      gameConfig
     );
 
     this.setupEventListeners();

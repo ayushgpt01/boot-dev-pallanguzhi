@@ -1,16 +1,11 @@
 import { Game } from './Game';
 import { GameView } from './GameView';
-import {
-  AIPlayer,
-  HumanPlayer,
-  isAIPlayer,
-  isHumanPlayer,
-  Player
-} from './Player';
+import { AIPlayer, isAIPlayer, isHumanPlayer, Player } from './Player';
 
 export class GameController {
   private gameState: Game;
   private gameView: GameView;
+  private config: GameConfig;
   private eventEmitter: EventTarget;
   private isPaused: boolean = false;
   private pauseResolver: ((value: void) => void) | null = null;
@@ -23,6 +18,7 @@ export class GameController {
     config: GameConfig
   ) {
     this.gameState = new Game(player1, player2, config);
+    this.config = config;
     this.gameView = gameView;
     this.eventEmitter = new EventTarget();
 
@@ -346,11 +342,11 @@ export class GameController {
   }
 
   private endTurn(): void {
-    this.gameState.switchPlayer();
-    this.gameState.reset();
-
     if (this.isRoundComplete()) {
       this.endRound();
+    } else {
+      this.gameState.switchPlayer();
+      this.gameState.reset();
     }
   }
 
@@ -360,11 +356,32 @@ export class GameController {
 
   private endRound(): void {
     this.applyPauperLogic();
-    // Start new round or end game
   }
 
   private applyPauperLogic(): void {
-    // Implementation for pauper logic
+    const board = this.gameState.getBoard();
+
+    for (let playerIndex = 0; playerIndex < 2; playerIndex++) {
+      const player = playerIndex === 0 ? 'player1' : 'player2';
+      let store = board.getStoreCount(player);
+
+      for (let pitIndex = 0; pitIndex < this.config.pitsPerPlayer; pitIndex++) {
+        const pos: Position = { player, pitIndex };
+        const current = board.getPitCount(pos);
+
+        if (store > 0 && current < this.config.initialBeads) {
+          const toAdd = Math.min(this.config.initialBeads - current, store);
+          store -= toAdd;
+          board.setPitCount(pos, current + toAdd);
+        }
+
+        if (board.getPitCount(pos) < this.config.initialBeads) {
+          board.deactivatePit(pos);
+        }
+      }
+
+      board.updateStoreCount(player, store);
+    }
   }
 
   private endGame(): void {

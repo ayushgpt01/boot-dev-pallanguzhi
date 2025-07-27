@@ -6,7 +6,11 @@ import { createPlayer } from './Player';
 export class MultiplayerGameController extends GameController {
   private gameClient: GameClient;
 
-  constructor(gameClient: GameClient, gameView: GameView) {
+  constructor(
+    gameClient: GameClient,
+    gameView: GameView,
+    gameConfig: GameConfig
+  ) {
     // Initialize with placeholder players - real players will be set when joining room
     const placeholderPlayer1 = createPlayer(
       'human',
@@ -21,11 +25,7 @@ export class MultiplayerGameController extends GameController {
       'player2'
     );
 
-    super(placeholderPlayer1, placeholderPlayer2, gameView, {
-      initialSeeds: 5,
-      pitsPerPlayer: 7,
-      maxDistributions: 2
-    });
+    super(placeholderPlayer1, placeholderPlayer2, gameView, gameConfig);
 
     this.gameClient = gameClient;
   }

@@ -66,6 +66,9 @@ export class Game {
   setInHandBeads(count: number): void {
     this.inHandBeads = count;
   }
+  setRound(round: number): void {
+    this.round = round;
+  }
   setDistributionCount(count: number): void {
     this.distributionCount = count;
   }

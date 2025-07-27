@@ -15,13 +15,15 @@ export class GameClient {
   private ws: WebSocket | null = null;
   private gameController: GameController | null = null;
   private gameView: GameView;
+  private gameConfig: GameConfig;
   private connectionState: ConnectionState;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private eventEmitter = new EventTarget();
 
-  constructor(gameView: GameView, serverUrl: string = 'ws://localhost:3001') {
+  constructor(gameView: GameView, gameConfig: GameConfig, serverUrl: string) {
     this.gameView = gameView;
+    this.gameConfig = gameConfig;
     this.connectionState = {
       connected: false,
       reconnecting: false,
@@ -176,11 +178,12 @@ export class GameClient {
     const player1 = playerSide === 'player1' ? localPlayer : remotePlayer;
     const player2 = playerSide === 'player2' ? localPlayer : remotePlayer;
 
-    this.gameController = new GameController(player1, player2, this.gameView, {
-      initialSeeds: 5,
-      pitsPerPlayer: 7,
-      maxDistributions: 2
-    });
+    this.gameController = new GameController(
+      player1,
+      player2,
+      this.gameView,
+      this.gameConfig
+    );
 
     // If there's existing game state, restore it
     if (gameState) {
@@ -251,7 +254,7 @@ export class GameClient {
   private syncGameState(serverGameState: any): void {
     if (!this.gameController) return;
 
-    // Apply the server game state to local game controller
+    // TODO - Apply the server game state to local game controller
     // You'll need to implement this based on your Game class structure
     const localGameState = this.gameController.getGameState();
 
@@ -384,7 +387,7 @@ export class GameClient {
   private getGameStateChecksum(): string {
     if (!this.gameController) return '';
 
-    // Create a simple checksum of current game state for validation
+    // TODO - Create a simple checksum of current game state for validation
     const gameState = this.gameController.getGameState();
     // You'll need to implement this based on your Game class
     return 'checksum_placeholder';
