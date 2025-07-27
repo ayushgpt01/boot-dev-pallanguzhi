@@ -8,6 +8,7 @@ import {
   Application
 } from 'pixi.js';
 import { GameController } from '../core/GameController';
+import { HumanPlayer, Player } from '../core/Player';
 
 // - [x] Make the game go anti-clock wise
 // - [ ] Add capturing logic
@@ -308,10 +309,11 @@ function handlePitClick(pit: Container) {
 
   const gameState = gameController.getGameState();
   const currentPhase = gameState.getGamePhase();
+  const currentPlayer = gameState.getCurrentPlayer();
 
   if (currentPhase === 'picking') {
     // Handle pick action
-    if (gameController.handlePickClick(position)) {
+    if (gameController.handlePickClick(currentPlayer, position)) {
       console.log('Valid pick action');
       // Update visual state
       updatePitVisual(pit);

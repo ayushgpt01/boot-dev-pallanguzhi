@@ -83,8 +83,8 @@ export class Game {
   isGameOver(): boolean {
     return (
       this.gamePhase === 'ended' ||
-      this.players.get('player1')!.getActivePitCount() === 0 ||
-      this.players.get('player2')!.getActivePitCount() === 0
+      this.players.get('player1')!.getActivePitCount(this) === 0 ||
+      this.players.get('player2')!.getActivePitCount(this) === 0
     );
   }
 
