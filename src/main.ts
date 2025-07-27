@@ -63,7 +63,7 @@ interface SeedAssets {
       maxDistributions: 2
     };
 
-    const gameView = new PixiGameView(app, seedAssets);
+    const gameView = new PixiGameView(app, seedAssets, handAssets);
     console.log('PixiGameView initialized');
 
     const controller = new GameController(

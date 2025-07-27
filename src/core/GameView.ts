@@ -12,19 +12,19 @@ interface SeedAssets {
   [key: string]: Texture;
 }
 
-interface HandAssets {
-  hand_open: Texture;
-  hand_closed: Texture;
-}
-
 export interface GameView {
-  render(gameState: Game, handAssets: HandAssets): void;
+  render(gameState: Game): void;
   highlightValidMoves(positions: Position[]): void;
   animateSowing(from: Position, to: Position): Promise<void>;
   showCapture(positions: Position[]): Promise<void>;
   registerPitSprite(position: Position, sprite: Container): void;
   registerScoreText(player: string, text: Text): void;
   registerTurnText(text: Text): void;
+}
+
+interface HandAssets {
+  hand_open: Texture;
+  hand_closed: Texture;
 }
 
 export class PixiGameView implements GameView {

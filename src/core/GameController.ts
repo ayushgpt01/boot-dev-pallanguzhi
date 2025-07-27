@@ -1,6 +1,6 @@
 import { Application, Texture } from 'pixi.js';
 import { Game } from './Game';
-import { GameView } from './GameView';
+import { GameView, PixiGameView } from './GameView';
 import {
   AIPlayer,
   HumanPlayer,
@@ -387,8 +387,6 @@ export class GameController {
 
   private updateView(): void {
     this.gameView.render(this.gameState);
-    // - [ ] TODO update this to use the second arguments as well
-    // this.gameView.render(this.gameState, this.handAssets);
   }
 
   private emitStateChange(): void {
