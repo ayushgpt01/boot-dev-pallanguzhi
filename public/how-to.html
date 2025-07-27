@@ -7,20 +7,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preload" href="/assets/game.png" as="image" />
 </head>
-<body class="flex flex-col min-h-screen bg-cover bg-center text-[#4b2c18] font-serif" style="background-image: url('/assets/game.png')">
+<body class="flex flex-col min-h-screen bg-cover bg-center bg-fixed text-[#4b2c18] font-serif" style="background-image: url('/assets/Background2.png')">
    <button 
-    onclick="window.history.back()" 
-    class="absolute top-4 left-4 px-4 py-2 bg-[#b69b7b] text-brown/40 rounded-lg shadow-md hover:bg-[#9c856a] transition">
-    ← Back
-  </button>
-  <div class="flex-grow p-6 max-w-4xl mx-auto rounded-2xl mt-8 shadow-lg backdrop-blur-md border-4 border-[#b69b7b]">
+  onclick="window.history.back()" 
+  class="fixed top-4 left-4 px-5 py-3 text-lg bg-[#b69b7b] text-[#4b2c18] border-2 border-[#4b2c18] rounded-xl shadow-lg hover:bg-[#9c856a] transition z-50">
+  ← Back
+</button>
+
+
+  <div class="flex-grow p-6 w-full max-w-4xl mx-auto mt-8 space-y-8 text-[#4b2c18]">
     <h1 class="text-5xl font-bold text-center drop-shadow-[2px_2px_0_#b69b7b] mb-6">How to Play</h1>
 
     <section class="space-y-4 text-xl leading-relaxed">
       <p>In turns, a player picks up all the BEADs from any of the holes on their side of the board and redistributes them one BEAD per hole 
     in a counter-clockwise direction, including onto spaces on their opponent’s side of the board.</p>
 
-  <p>Captures happen when the play space next to the last BEAD redistributed is empty. The player captures all the BEADs in the hole after 
+    <p>Captures happen when the play space next to the last BEAD redistributed is empty. The player captures all the BEADs in the hole after 
     the empty hole, and all the BEADs in the space opposite the hole BEADs were captured from.</p>
 
   <p>If the space next to the last BEAD redistributed is empty and at the end of a row, the player will have only one pit to capture BEADs
