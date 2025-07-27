@@ -1,6 +1,12 @@
 import { Game } from './Game';
 import { GameView } from './GameView';
-import { HumanPlayer, Player } from './Player';
+import {
+  AIPlayer,
+  HumanPlayer,
+  isAIPlayer,
+  isHumanPlayer,
+  Player
+} from './Player';
 
 export class GameController {
   private gameState: Game;
@@ -8,6 +14,7 @@ export class GameController {
   private eventEmitter: EventTarget;
   private isPaused: boolean = false;
   private pauseResolver: ((value: void) => void) | null = null;
+  private currentTurnResolver: ((value: void) => void) | null = null;
 
   constructor(
     player1: Player,
@@ -29,15 +36,19 @@ export class GameController {
     });
 
     this.eventEmitter.addEventListener('gamePaused', () => {
-      // Need to show the pause Game UI
       console.log('Game paused');
     });
 
     this.eventEmitter.addEventListener('gameResumed', () => {
-      // Need to show the resume Game UI
       console.log('Game resumed');
     });
-    // Other event listeners like 'gameEnded' or 'updateUI' or web socket events
+
+    this.eventEmitter.addEventListener('turnCompleted', () => {
+      if (this.currentTurnResolver) {
+        this.currentTurnResolver();
+        this.currentTurnResolver = null;
+      }
+    });
   }
 
   async startGame(): Promise<void> {
@@ -53,23 +64,20 @@ export class GameController {
     // Wait if game is paused
     await this.waitIfPaused();
 
-    // For AI players, handle automatically
-    if (!(currentPlayer instanceof HumanPlayer)) {
+    if (isAIPlayer(currentPlayer)) {
       await this.handleAITurn();
-      return;
+    } else {
+      await this.handleHumanTurn();
     }
-
-    // For human players, wait for user interactions
-    await this.handleHumanTurn();
   }
 
   private async handleAITurn(): Promise<void> {
-    const currentPlayer = this.gameState.getCurrentPlayer();
+    const currentPlayer = this.gameState.getCurrentPlayer() as AIPlayer;
 
     // Phase 1: AI picks beads
     if (this.gameState.getGamePhase() === 'picking') {
-      const pickPosition = await currentPlayer.makeMove(this.gameState);
       try {
+        const pickPosition = await currentPlayer.makeMove(this.gameState);
         this.pickBeads(pickPosition);
       } catch (e) {
         console.error('AI invalid move:', e);
@@ -81,27 +89,44 @@ export class GameController {
     // Phase 2: AI sows automatically with animation delays
     while (this.gameState.getGamePhase() === 'sowing') {
       await this.waitIfPaused();
-      await this.sowNextBead();
+
+      const nextSowPosition = currentPlayer.getNextSowPosition(this.gameState);
+      if (nextSowPosition && this.gameState.getInHandBeads() > 0) {
+        this.sowBead(nextSowPosition);
+        // Add delay for animation
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      } else {
+        break;
+      }
     }
 
     this.endTurn();
   }
 
   private async handleHumanTurn(): Promise<void> {
-    // Human turn is handled by user events (mouse clicks)
-    // This method waits until the turn is complete
+    // Human turn is handled by mouse events
+    // Wait until turn is completed (phase returns to picking with no beads in hand)
     return new Promise((resolve) => {
+      this.currentTurnResolver = resolve;
+
+      // Set up a backup check in case events don't fire properly
+      // NOTE - If game ends prematurely check here
       const checkTurnComplete = () => {
         if (
           this.gameState.getGamePhase() === 'picking' &&
           this.gameState.getInHandBeads() === 0
         ) {
-          resolve();
+          if (this.currentTurnResolver) {
+            this.currentTurnResolver();
+            this.currentTurnResolver = null;
+          }
         } else {
           setTimeout(checkTurnComplete, 100);
         }
       };
-      checkTurnComplete();
+
+      // Start the backup check
+      setTimeout(checkTurnComplete, 100);
     });
   }
 
@@ -113,11 +138,15 @@ export class GameController {
     }
   }
 
+  /**
+   * Handle left mouse button - SOW action
+   * Only current human player can sow
+   */
   handleSowClick(position: Position): boolean {
     const currentPlayer = this.gameState.getCurrentPlayer();
 
-    // Only current player can sow
-    if (!(currentPlayer instanceof HumanPlayer)) {
+    // Only human players can manually sow
+    if (!isHumanPlayer(currentPlayer)) {
       return false;
     }
 
@@ -143,6 +172,15 @@ export class GameController {
 
     try {
       this.sowBead(position);
+
+      // Check if turn is complete after sowing
+      if (
+        this.gameState.getGamePhase() === 'picking' &&
+        this.gameState.getInHandBeads() === 0
+      ) {
+        this.completeTurn();
+      }
+
       return true;
     } catch (e) {
       console.error('Invalid sow:', e);
@@ -152,21 +190,20 @@ export class GameController {
 
   /**
    * Handle right mouse button - PICK action
-   * Any player can pick from their own side
    */
-  handlePickClick(position: Position): boolean {
+  handlePickClick(player: Player, position: Position): boolean {
+    // Only human players can manually pick
+    if (!isHumanPlayer(player)) {
+      return false;
+    }
+
     // Can only pick during picking phase
     if (this.gameState.getGamePhase() !== 'picking') {
       return false;
     }
 
     // Player can only pick from their own side
-    const currentPlayer = this.gameState.getCurrentPlayer();
-    if (!(currentPlayer instanceof HumanPlayer)) {
-      return false;
-    }
-
-    if (position.player !== currentPlayer.getPlayerSide()) {
+    if (position.player !== player.getPlayerSide()) {
       return false;
     }
 
@@ -177,6 +214,10 @@ export class GameController {
       console.error('Invalid pick:', e);
       return false;
     }
+  }
+
+  private completeTurn(): void {
+    this.eventEmitter.dispatchEvent(new CustomEvent('turnCompleted'));
   }
 
   pauseGame(): void {
@@ -243,32 +284,6 @@ export class GameController {
     }
 
     this.emitStateChange();
-  }
-
-  private async sowNextBead(): Promise<void> {
-    if (this.gameState.getInHandBeads() <= 0) {
-      this.handleEmptyHand();
-      return;
-    }
-
-    const board = this.gameState.getBoard();
-    const lastPosition = this.gameState.getLastSowPosition()!;
-    const nextPosition = board.getNextPosition(lastPosition);
-
-    // Sow one bead
-    board.incrementPit(nextPosition);
-    this.gameState.decrementInHandBeads();
-    this.gameState.setLastSowPosition(nextPosition);
-
-    // Check for 4-bead capture
-    if (board.getPitCount(nextPosition) === 4) {
-      this.performFourBeadCapture(nextPosition);
-    }
-
-    this.emitStateChange();
-
-    // Add delay for animation
-    await new Promise((resolve) => setTimeout(resolve, 300));
   }
 
   private handleEmptyHand(): void {
@@ -363,12 +378,19 @@ export class GameController {
     this.eventEmitter.dispatchEvent(new CustomEvent('gameStateChanged'));
   }
 
-  getGameState(): Game {
-    return this.gameState;
+  getValidPickPositionsForPlayer(player: Player): Position[] {
+    if (isHumanPlayer(player)) {
+      return player.getValidPickPositions(this.gameState);
+    }
+
+    return [];
   }
 
   getValidSowPositions(): Position[] {
+    const currentPlayer = this.gameState.getCurrentPlayer();
+
     if (
+      !isHumanPlayer(currentPlayer) ||
       this.gameState.getGamePhase() !== 'sowing' ||
       this.gameState.getInHandBeads() <= 0
     ) {
@@ -383,37 +405,38 @@ export class GameController {
   }
 
   getValidPickPositions(): Position[] {
-    if (this.gameState.getGamePhase() !== 'picking') {
-      return [];
-    }
-
     const currentPlayer = this.gameState.getCurrentPlayer();
-    if (!(currentPlayer instanceof HumanPlayer)) {
+
+    if (
+      !isHumanPlayer(currentPlayer) ||
+      this.gameState.getGamePhase() !== 'picking'
+    ) {
       return [];
     }
 
-    const board = this.gameState.getBoard();
-    const validPositions: Position[] = [];
-
-    for (let i = 0; i < 7; i++) {
-      const position: Position = {
-        player: currentPlayer.getPlayerSide(),
-        pitIndex: i
-      };
-
-      if (board.isPitActive(position) && !board.isPitEmpty(position)) {
-        validPositions.push(position);
-      }
-    }
-
-    return validPositions;
+    return currentPlayer.getValidPickPositions(this.gameState);
   }
 
-  getInHandBeads(): number {
-    return this.gameState.getInHandBeads();
+  isCurrentPlayerHuman(): boolean {
+    return isHumanPlayer(this.gameState.getCurrentPlayer());
   }
 
-  isCurrentPlayerTurn(playerSide: 'player1' | 'player2'): boolean {
-    return this.gameState.getCurrentPlayer().getPlayerSide() === playerSide;
+  getCurrentPlayerInfo(): {
+    id: string;
+    name: string;
+    side: 'player1' | 'player2';
+    isHuman: boolean;
+  } {
+    const player = this.gameState.getCurrentPlayer();
+    return {
+      id: player.getId(),
+      name: player.getName(),
+      side: player.getPlayerSide(),
+      isHuman: isHumanPlayer(player)
+    };
+  }
+
+  getGameState(): Game {
+    return this.gameState;
   }
 }
