@@ -191,7 +191,8 @@ export class GameController {
   /**
    * Handle right mouse button - PICK action
    */
-  handlePickClick(player: Player, position: Position): boolean {
+  handlePickClick(position: Position): boolean {
+    const player = this.gameState.getCurrentPlayer();
     // Only human players can manually pick
     if (!isHumanPlayer(player)) {
       return false;
@@ -217,6 +218,7 @@ export class GameController {
   }
 
   private completeTurn(): void {
+    this.endTurn();
     this.eventEmitter.dispatchEvent(new CustomEvent('turnCompleted'));
   }
 
