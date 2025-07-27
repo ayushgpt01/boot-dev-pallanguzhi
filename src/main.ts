@@ -77,6 +77,9 @@ interface SeedAssets {
     );
     console.log('Board added to stage');
 
+    // Initialization
+    //controller.initializeBoard();
+
     gameView = new PixiGameView(app, seedAssets, handAssets, controller); // Reassign with real controller
     controller.gameView = gameView;
 

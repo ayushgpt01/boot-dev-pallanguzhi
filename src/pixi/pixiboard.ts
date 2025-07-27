@@ -208,8 +208,8 @@ function createPit(
   const pit = new Container();
   const { player, pitIndex } = position;
 
-  pit.x = 100 + pitIndex * 120;
-  pit.y = player === 'player1' ? 200 : 400;
+  pit.x = 500 + pitIndex * 150;
+  pit.y = player === 'player1' ? 360 : 600;
 
   const pitRadius = 60;
   const initialSeeds = gameState.getBoard().getPitCount(position);

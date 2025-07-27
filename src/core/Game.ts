@@ -14,6 +14,25 @@ export class Game {
 
   constructor(player1: Player, player2: Player, config: GameConfig) {
     this.board = new Board(config);
+
+    for (let i = 0; i < config.pitsPerPlayer; i++) {
+      this.board.setPitCount(
+        { player: 'player1', pitIndex: i },
+        config.initialSeeds
+      );
+      this.board.setPitCount(
+        { player: 'player2', pitIndex: i },
+        config.initialSeeds
+      );
+
+      console.log(
+        `Set pit ${i} for ${'player1'} to ${config.initialSeeds}, actual: ${this.board.getPitCount({ player: 'player1', pitIndex: i })}`
+      );
+      console.log(
+        `Set pit ${i} for ${'player2'} to ${config.initialSeeds}, actual: ${this.board.getPitCount({ player: 'player2', pitIndex: i })}`
+      );
+    }
+
     this.players = new Map([
       ['player1', player1],
       ['player2', player2]
