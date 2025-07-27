@@ -10,11 +10,6 @@ import {
 import { GameController } from '../core/GameController';
 import { HumanPlayer, Player } from '../core/Player';
 
-// - [x] Make the game go anti-clock wise
-// - [ ] Add capturing logic
-// what it should do is just remove the captured number of seeds from the board
-// (i.e., the pit next to the empty one and the pit on the other side of the same pit). and update the score of the player with the number of seeds captured.
-
 const pits: Container[] = [];
 let seedIdCounter = 0;
 let playerA_score = 0;
