@@ -9,6 +9,7 @@ export class Game {
   private gamePhase: 'picking' | 'sowing' | 'ended';
   private inHandBeads: number;
   private distributionCount: number;
+  private maxDistributionCount: number;
   private lastSowPosition: Position | null;
 
   constructor(player1: Player, player2: Player, config: GameConfig) {
@@ -23,6 +24,7 @@ export class Game {
     this.inHandBeads = 0;
     this.distributionCount = 0;
     this.lastSowPosition = null;
+    this.maxDistributionCount = config.maxDistributions;
   }
 
   // Getters
@@ -49,6 +51,9 @@ export class Game {
   }
   getLastSowPosition(): Position | null {
     return this.lastSowPosition;
+  }
+  getMaxDistributions(): number {
+    return this.maxDistributionCount;
   }
 
   // Setters

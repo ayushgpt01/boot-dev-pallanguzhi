@@ -51,7 +51,11 @@ export class PixiGameView implements GameView {
     }
   }
 
-  private updatePitVisual(sprite: any, count: number, isActive: boolean): void {
+  private updatePitVisual(
+    sprite: Sprite,
+    count: number,
+    isActive: boolean
+  ): void {
     // Update visual representation
   }
 
