@@ -7,6 +7,7 @@ import {
   Texture
 } from 'pixi.js';
 import { Game } from './Game';
+import { GameController } from './GameController';
 
 interface SeedAssets {
   [key: string]: Texture;
@@ -20,6 +21,7 @@ export interface GameView {
   registerPitSprite(position: Position, sprite: Container): void;
   registerScoreText(player: string, text: Text): void;
   registerTurnText(text: Text): void;
+  updatePitSeeds(pit: Container, targetCount: number): void;
 }
 
 interface HandAssets {
@@ -39,11 +41,13 @@ export class PixiGameView implements GameView {
   constructor(
     app: Application,
     seedAssets: SeedAssets,
-    handAssets: HandAssets
+    handAssets: HandAssets,
+    controller: GameController
   ) {
     this.app = app;
     this.seedAssets = seedAssets;
     this.handAssets = handAssets;
+    this.controller = controller;
     this.setupBoard();
   }
 
@@ -102,7 +106,7 @@ export class PixiGameView implements GameView {
     this.updatePitSeeds(sprite, count);
   }
 
-  private updatePitSeeds(pit: Container, targetCount: number): void {
+  public updatePitSeeds(pit: Container, targetCount: number): void {
     const currentSeeds = pit.children.slice(1); // All children except the circle
     const currentCount = currentSeeds.length;
 
@@ -177,22 +181,15 @@ export class PixiGameView implements GameView {
     }
   }
 
+  private controller: GameController;
+
   private updateHandVisibility(position: Position): void {
     const key = `${position.player}-${position.pitIndex}`;
     const pit = this.pitSprites.get(key);
     if (!pit) return;
 
     const handSprite = pit.children[1] as Sprite; // Hand is second child
-    const game = this.app.stage.children.find((c) => c.name === 'game');
-    const controllerContainer = game?.children.find(
-      (c) => c.name === 'controller'
-    );
-    const gameState = controllerContainer?.['controller']?.getGameState();
-
-    // const gameState = this.app.stage
-    //   .getChildByName('game')
-    //   ?.getChildByName('controller')
-    //   ?.['controller']?.getGameState();
+    const gameState = this.controller.getGameState();
 
     if (!gameState) return;
 

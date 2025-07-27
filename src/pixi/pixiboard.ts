@@ -31,6 +31,8 @@ export function createBoard(
   const gameView = controller.gameView as PixiGameView;
   const container = new Container();
 
+  console.log('HELLO FROM CREATE BOARD');
+
   // Board dimensions and positioning
   const boardWidth = 724 * 1.5;
   const boardHeight = 300 * 1.5;
@@ -205,8 +207,14 @@ function createPit(
 ): Container {
   const pit = new Container();
   const { player, pitIndex } = position;
+
+  pit.x = 100 + pitIndex * 120;
+  pit.y = player === 'player1' ? 200 : 400;
+
   const pitRadius = 60;
   const initialSeeds = gameState.getBoard().getPitCount(position);
+
+  console.log('HELLO FROM CREATEPIT');
 
   const circle = new Graphics()
     .circle(0, 0, pitRadius)
