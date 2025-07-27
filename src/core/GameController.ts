@@ -384,13 +384,17 @@ export class GameController {
     }
   }
 
-  private endGame(): void {
+  endGame(): void {
     this.gameState.setGamePhase('ended');
     this.emitStateChange();
   }
 
   private updateView(): void {
     this.gameView.render(this.gameState);
+  }
+
+  getGameViewInstance(): GameView {
+    return this.gameView;
   }
 
   private emitStateChange(): void {
@@ -455,7 +459,11 @@ export class GameController {
     };
   }
 
-  getGameState(): Game {
+  getGameInstance(): Game {
     return this.gameState;
+  }
+
+  getGameState(): SerializedGameState {
+    return this.gameState.getGameState();
   }
 }

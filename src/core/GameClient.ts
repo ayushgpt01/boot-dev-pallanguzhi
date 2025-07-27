@@ -2,6 +2,21 @@ import { GameController } from './GameController';
 import { GameView } from './GameView';
 import { createPlayer, Player, RemotePlayer } from './Player';
 
+export enum EventTypes {
+  connected = 'connected',
+  disconnected = 'disconnected',
+  connectionError = 'connectionError',
+  roomJoined = 'roomJoined',
+  opponentMove = 'opponentMove',
+  playerJoined = 'playerJoined',
+  playerLeft = 'playerLeft',
+  playerReconnected = 'playerReconnected',
+  gamePaused = 'gamePaused',
+  gameResumed = 'gameResumed',
+  gameEnded = 'gameEnded',
+  serverError = 'serverError'
+}
+
 interface ConnectionState {
   connected: boolean;
   reconnecting: boolean;
@@ -56,7 +71,12 @@ export class GameClient {
       this.connectionState.connected = true;
       this.connectionState.reconnecting = false;
       this.reconnectAttempts = 0;
-      this.emitEvent('connected');
+      this.emitEvent(EventTypes.connected);
+
+      const { roomCode, sessionId, playerName } = this.connectionState;
+      if (roomCode && sessionId) {
+        this.joinRoom(roomCode, playerName || undefined);
+      }
     };
 
     this.ws.onmessage = (event) => {
@@ -71,7 +91,7 @@ export class GameClient {
     this.ws.onclose = () => {
       console.log('Disconnected from game server');
       this.connectionState.connected = false;
-      this.emitEvent('disconnected');
+      this.emitEvent(EventTypes.disconnected);
       this.attemptReconnect();
     };
 
@@ -108,7 +128,7 @@ export class GameClient {
 
   private handleConnectionError(): void {
     this.connectionState.connected = false;
-    this.emitEvent('connectionError');
+    this.emitEvent(EventTypes.connectionError);
   }
 
   // ---- SERVER MESSAGE HANDLERS ----
@@ -190,7 +210,7 @@ export class GameClient {
       this.syncGameState(gameState);
     }
 
-    this.emitEvent('roomJoined', {
+    this.emitEvent(EventTypes.roomJoined, {
       roomCode,
       playerSide,
       playerName,
@@ -205,62 +225,63 @@ export class GameClient {
       this.syncGameState(gameState);
 
       if (lastAction) {
-        this.emitEvent('opponentMove', lastAction);
+        this.emitEvent(EventTypes.opponentMove, lastAction);
       }
     }
   }
 
   private handlePlayerJoined(message: PlayerJoinedMessage): void {
     const { playerName, playerSide } = message.data;
-    this.emitEvent('playerJoined', { playerName, playerSide });
+    this.emitEvent(EventTypes.playerJoined, { playerName, playerSide });
   }
 
   private handlePlayerLeft(message: PlayerLeftMessage): void {
     const { playerName, playerSide, reason } = message.data;
-    this.emitEvent('playerLeft', { playerName, playerSide, reason });
+    this.emitEvent(EventTypes.playerLeft, { playerName, playerSide, reason });
   }
 
   private handlePlayerReconnected(message: PlayerReconnectedMessage): void {
     const { playerName, playerSide } = message.data;
-    this.emitEvent('playerReconnected', { playerName, playerSide });
+    this.emitEvent(EventTypes.playerReconnected, { playerName, playerSide });
   }
 
   private handleGamePaused(message: GamePausedMessage): void {
     if (this.gameController) {
       this.gameController.pauseGame();
     }
-    this.emitEvent('gamePaused', message.data);
+    this.emitEvent(EventTypes.gamePaused, message.data);
   }
 
   private handleGameResumed(message: GameResumedMessage): void {
     if (this.gameController) {
       this.gameController.resumeGame();
     }
-    this.emitEvent('gameResumed', message.data);
+    this.emitEvent(EventTypes.gameResumed, message.data);
   }
 
   private handleGameEnded(message: GameEndedMessage): void {
-    this.emitEvent('gameEnded', message.data);
+    this.emitEvent(EventTypes.gameEnded, message.data);
   }
 
   private handleError(message: ErrorMessage): void {
     const { code, message: errorMessage } = message.data;
     console.error(`Server error [${code}]: ${errorMessage}`);
-    this.emitEvent('serverError', { code, message: errorMessage });
+    this.emitEvent(EventTypes.serverError, { code, message: errorMessage });
   }
 
   // ---- SERVER ACTIONS ----
 
-  private syncGameState(serverGameState: any): void {
+  private syncGameState(serverGameState: SerializedGameState): void {
     if (!this.gameController) return;
 
-    // TODO - Apply the server game state to local game controller
-    // You'll need to implement this based on your Game class structure
     const localGameState = this.gameController.getGameState();
+    const serverCheckSum = this.getGameStateChecksum(serverGameState);
+    const localGameStateChecksum = this.getGameStateChecksum(localGameState);
 
-    // Update local game state with server state
-    // This is where you'd deserialize and apply the server state
-    console.log('Syncing game state:', serverGameState);
+    if (serverCheckSum !== localGameStateChecksum) {
+      this.gameController.getGameInstance().updateGameState(serverGameState);
+      console.log('Resyncing game state:', serverGameState);
+    }
   }
 
   // ---- CLIENT ACTIONS ----
@@ -321,7 +342,9 @@ export class GameClient {
         data: {
           action,
           position,
-          gameStateChecksum: this.getGameStateChecksum()
+          gameStateChecksum: this.gameController
+            ? this.getGameStateChecksum(this.gameController.getGameState())
+            : ''
         },
         timestamp: Date.now()
       };
@@ -384,13 +407,15 @@ export class GameClient {
     }
   }
 
-  private getGameStateChecksum(): string {
-    if (!this.gameController) return '';
-
-    // TODO - Create a simple checksum of current game state for validation
-    const gameState = this.gameController.getGameState();
-    // You'll need to implement this based on your Game class
-    return 'checksum_placeholder';
+  private getGameStateChecksum(state: SerializedGameState): string {
+    const data = JSON.stringify(state);
+    let hash = 0;
+    for (let i = 0; i < data.length; i++) {
+      const char = data.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash.toString();
   }
 
   private resetConnectionState(): void {
@@ -406,7 +431,7 @@ export class GameClient {
 
   // ---- Event Emitter ----
 
-  private emitEvent(eventType: string, data?: any): void {
+  private emitEvent(eventType: EventTypes, data?: any): void {
     this.eventEmitter.dispatchEvent(
       new CustomEvent(eventType, { detail: data })
     );

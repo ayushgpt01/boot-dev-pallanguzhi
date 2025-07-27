@@ -26,7 +26,7 @@ interface PlayerSession {
 interface GameRoom {
   roomCode: string;
   players: Map<string, PlayerSession>; // sessionId -> PlayerSession
-  gameState: any; // Your Game class instance serialized
+  gameState: any;
   createdAt: number;
   lastActivity: number;
   gameStarted: boolean;
@@ -144,6 +144,7 @@ class GameServer {
     room.players.set(newSessionId, playerSession);
     this.sessionToRoom.set(newSessionId, roomCode);
     room.lastActivity = Date.now();
+    (ws as any).sessionId = newSessionId;
 
     // Start game if both players joined
     if (room.players.size === 2 && !room.gameStarted) {
@@ -188,7 +189,7 @@ class GameServer {
     try {
       const { action, position } = message.data;
 
-      // Apply move to game state (you'll need to implement this)
+      // Apply move to game state
       const newGameState = this.applyMove(
         room.gameState,
         player.playerSide,
@@ -351,7 +352,7 @@ class GameServer {
   }
 
   private initializeGameState(room: GameRoom): void {
-    // Initialize your Game class here with the two players
+    // TODO - Initialize Game class here with the two players
     // room.gameState = new Game(player1, player2, room.config);
     room.gameState = {
       /* serialized game state */
@@ -364,8 +365,8 @@ class GameServer {
     action: string,
     position: Position
   ): any {
-    // Apply the move to your game state and return new state
-    // This is where you'd integrate with your existing Game class
+    // TODO - Apply the move to game state and return new state
+    // Game class integation
     return gameState;
   }
 
@@ -474,7 +475,7 @@ class GameServer {
   }
 
   private getSessionId(ws: WebSocket): string | null {
-    // You'll need to store sessionId on the WebSocket connection
+    // We need to store sessionId on the WebSocket connection for easier access
     return (ws as any).sessionId || null;
   }
 

@@ -3,6 +3,22 @@ export interface Position {
   pitIndex: number;
 }
 
+export interface BoardState {
+  pits: number[][];
+  stores: number[];
+  activePits: boolean[][];
+}
+
+export interface SerializedGameState {
+  board: BoardState;
+  currentPlayerId: string;
+  round: number;
+  gamePhase: 'picking' | 'sowing' | 'ended';
+  inHandBeads: number;
+  distributionCount: number;
+  lastSowPosition: Position | null;
+}
+
 export interface GameConfig {
   /** The initial number of seeds in each pit */
   initialSeeds: number;
@@ -64,7 +80,7 @@ export interface RoomJoinedMessage extends WSMessage {
     sessionId: string;
     playerSide: 'player1' | 'player2';
     playerName: string;
-    gameState: any; // Full game state
+    gameState: SerializedGameState; // Full game state
     opponent?: {
       name: string;
       connected: boolean;
@@ -75,7 +91,7 @@ export interface RoomJoinedMessage extends WSMessage {
 export interface GameStateUpdateMessage extends WSMessage {
   type: 'GAME_STATE_UPDATE';
   data: {
-    gameState: any;
+    gameState: SerializedGameState;
     lastAction?: {
       player: string;
       action: 'sow' | 'pick';

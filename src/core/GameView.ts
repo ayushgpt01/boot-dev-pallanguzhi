@@ -6,6 +6,12 @@ export interface GameView {
   highlightValidMoves(positions: Position[]): void;
   animateSowing(from: Position, to: Position): Promise<void>;
   showCapture(positions: Position[]): Promise<void>;
+  onOpponentJoined(playerName: string): void;
+  onOpponentDisconnected(): void;
+  onOpponentReconnected(): void;
+  onGamePaused(pausedBy: string): void;
+  onGameResumed(resumedBy: string): void;
+  onGameEnded(reason: 'vote' | 'disconnect' | string): void;
 }
 
 export class PixiGameView implements GameView {
@@ -16,6 +22,24 @@ export class PixiGameView implements GameView {
   constructor(app: Application) {
     this.app = app;
     this.setupBoard();
+  }
+  onOpponentJoined(playerName: string): void {
+    // Update player list
+  }
+  onOpponentDisconnected(): void {
+    // Update player list
+  }
+  onOpponentReconnected(): void {
+    // Update player list
+  }
+  onGamePaused(pausedBy: string): void {
+    // Update UI
+  }
+  onGameResumed(resumedBy: string): void {
+    // Update UI
+  }
+  onGameEnded(reason: 'vote' | 'disconnect' | string): void {
+    // Update UI
   }
 
   private setupBoard(): void {

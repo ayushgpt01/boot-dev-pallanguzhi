@@ -4,6 +4,8 @@ import { Player } from './Player';
 export class Game {
   private board: Board;
   private currentPlayer: Player;
+  private player1Id: string;
+  private player2Id: string;
   private players: Map<string, Player>;
   private round: number;
   private gamePhase: 'picking' | 'sowing' | 'ended';
@@ -14,10 +16,13 @@ export class Game {
 
   constructor(player1: Player, player2: Player, config: GameConfig) {
     this.board = new Board(config);
+    this.player1Id = player1.getId();
+    this.player2Id = player2.getId();
     this.players = new Map([
-      ['player1', player1],
-      ['player2', player2]
+      [player1.getId(), player1],
+      [player2.getId(), player2]
     ]);
+
     this.currentPlayer = player1;
     this.round = 1;
     this.gamePhase = 'picking';
@@ -86,14 +91,14 @@ export class Game {
   isGameOver(): boolean {
     return (
       this.gamePhase === 'ended' ||
-      this.players.get('player1')!.getActivePitCount(this) === 0 ||
-      this.players.get('player2')!.getActivePitCount(this) === 0
+      this.players.get(this.player1Id)!.getActivePitCount(this) === 0 ||
+      this.players.get(this.player2Id)!.getActivePitCount(this) === 0
     );
   }
 
   switchPlayer(): void {
-    const player1 = this.players.get('player1')!;
-    const player2 = this.players.get('player2')!;
+    const player1 = this.players.get(this.player1Id)!;
+    const player2 = this.players.get(this.player2Id)!;
     this.currentPlayer = this.currentPlayer === player1 ? player2 : player1;
   }
 
@@ -102,5 +107,27 @@ export class Game {
     this.inHandBeads = 0;
     this.distributionCount = 0;
     this.lastSowPosition = null;
+  }
+
+  getGameState(): SerializedGameState {
+    return {
+      board: this.board.getBoardState(),
+      currentPlayerId: this.currentPlayer.getId(),
+      round: this.round,
+      gamePhase: this.gamePhase,
+      inHandBeads: this.inHandBeads,
+      distributionCount: this.distributionCount,
+      lastSowPosition: this.lastSowPosition
+    };
+  }
+
+  updateGameState(state: SerializedGameState): void {
+    this.board.applyBoardState(state.board);
+    this.currentPlayer = this.players.get(state.currentPlayerId)!;
+    this.round = state.round;
+    this.gamePhase = state.gamePhase;
+    this.inHandBeads = state.inHandBeads;
+    this.distributionCount = state.distributionCount;
+    this.lastSowPosition = state.lastSowPosition;
   }
 }
