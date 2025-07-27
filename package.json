@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "start": "npm run dev",
-    "build": "npm run lint && vite build",
+    "build": "npm run lint && tsc --noEmit && vite build",
     "lint": "eslint .",
     "dev": "vite"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.11",
-    "pixi.js": "^8.8.1"
+    "@tailwindcss/vite": "^4.1.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
@@ -20,9 +19,24 @@
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
+    "pixi.js": "^8.11.0",
     "postcss": "^8.5.6",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.11",
-    "vite": "^6.2.0"
-  }
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "description": "Boot.dev hackathon Project - A fast, browser-based implementation of the traditional South Indian game Pallanguzhi",
+  "main": "postcss.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayushgpt01/boot-dev-pallanguzhi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ayushgpt01/boot-dev-pallanguzhi/issues"
+  },
+  "homepage": "https://github.com/ayushgpt01/boot-dev-pallanguzhi#readme"
 }

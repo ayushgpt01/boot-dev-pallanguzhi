@@ -20,40 +20,38 @@
   </style>
 </head>
 
-    <body class="flex items-center justify-center">
+<body class="flex items-center justify-center">
   <div class="text-center w-full space-y-20">
     <h1 class="text-9xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] sm:text-7xl md:text-8xl lg:text-9xl break-words">PALLANGUZHI</h1>
-    <button class="text-7xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition" id ="start-btn">
+    <button class="text-7xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition" id="start-btn">
       Start Game
     </button>
     <div>
-    <button class="text-7xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition" id="how-to-btn">
-      How to Play
-    </button>
+      <button class="text-7xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition" id="how-to-btn">
+        How to Play
+      </button>
     </div>
   </div>
+
   <script type="module">
-  const startBtn = document.getElementById('start-btn') as HTMLButtonElement | null;
-  const howToBtn = document.getElementById('how-to-btn') as HTMLButtonElement | null;
+    const startBtn = document.getElementById('start-btn');
+    const howToBtn = document.getElementById('how-to-btn');
 
-  if (startBtn) {
-    startBtn.addEventListener('click', () => {
-      window.location.href = '/game.html';
-    });
-  }
+    if (startBtn) {
+      startBtn.addEventListener('click', () => {
+        window.location.href = '/game.html';
+      });
+    }
 
-  if (howToBtn) {
-    howToBtn.addEventListener('click', () => {
-      window.location.href = '/how-to.html';
-    });
-  }
-</script>
+    if (howToBtn) {
+      howToBtn.addEventListener('click', () => {
+        window.location.href = '/how-to.html';
+      });
+    }
+  </script>
 
-
-<footer class="absolute bottom-0 w-full text-center text-[#4b2c18] pb-4 text-xl drop-shadow-[2px_2px_0_#f3f1db]">
-  © 2025 Pallanguzhi. All rights reserved.
-</footer>
-
+  <footer class="absolute bottom-0 w-full text-center text-[#4b2c18] pb-4 text-xl drop-shadow-[2px_2px_0_#f3f1db]">
+    © 2025 Pallanguzhi. All rights reserved.
+  </footer>
 </body>
-
 </html>
