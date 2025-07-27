@@ -1,20 +1,20 @@
-import { TextStyle, Text } from "pixi.js";
+import { Application, Text, TextStyle } from 'pixi.js';
 
-export function createTitleText(app) {
+export function createTitleText(app: Application) {
   const style = new TextStyle({
     fill: 0x000000,
-    fontSize: 72,
-    fontFamily: "IM-Fell-English",
+    fontSize: 48,
+    fontFamily: 'Cinzel-Bold'
   });
 
-  const text = new Text({
-    text: "Alaguli Mane/Pallanguzhi",
-    style,
+  const title = new Text({
+    text: 'Pallanguzhi',
+    style
   });
 
-  text.anchor.set(0.5, 0);
-  text.x = app.screen.width / 2;
-  text.y = 30;
+  title.anchor.set(0.5);
+  title.x = app.screen.width / 2;
+  title.y = 50;
 
-  return text;
+  return title;
 }

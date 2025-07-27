@@ -4,7 +4,7 @@ import { HumanPlayer, Player } from './Player';
 
 export class GameController {
   private gameState: Game;
-  private gameView: GameView;
+  public gameView: GameView;
   private eventEmitter: EventTarget;
   private isPaused: boolean = false;
   private pauseResolver: ((value: void) => void) | null = null;

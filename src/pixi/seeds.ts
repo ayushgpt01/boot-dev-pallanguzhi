@@ -1,25 +1,24 @@
-import { Sprite, Assets } from "pixi.js";
+import { Application, Sprite, Assets } from 'pixi.js';
 
-export async function createSeeds(app) {
-  const seedPaths = [
-    // "/assets/seed.svg",
-    "/assets/seeds/seed_one.png",
-    "/assets/seeds/seed_two.png",
-    "/assets/seeds/seed_three.png",
-    "/assets/seeds/seed_four.png",
-    "/assets/seeds/seed_one.png",
-  ];
+export async function createSeeds(app: Application) {
+  const seedAssets = await Assets.loadBundle('seeds');
+  const seeds: Sprite[] = [];
 
-  const sprites = [];
+  for (let i = 0; i < 5; i++) {
+    const seedSprite = Sprite.from(
+      (Object as any).values(seedAssets)[
+        Math.floor(Math.random() * Object.keys(seedAssets).length)
+      ]
+    );
 
-  for (let i = 0; i < seedPaths.length; i++) {
-    const texture = await Assets.load(seedPaths[i]);
-    const sprite = Sprite.from(texture);
-    sprite.scale.set(0.3);
-    sprite.x = 100 + i * 60;
-    sprite.y = 100;
-    sprites.push(sprite);
+    seedSprite.anchor.set(0.5);
+    seedSprite.scale.set(0.15);
+
+    seedSprite.x = 100 + i * 100;
+    seedSprite.y = 100;
+
+    seeds.push(seedSprite);
   }
 
-  return sprites;
+  return seeds;
 }

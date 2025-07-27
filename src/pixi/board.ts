@@ -1,19 +1,37 @@
-import { Container, Graphics, Sprite, Assets, Text, TextStyle } from "pixi.js";
+import {
+  Container,
+  Graphics,
+  Sprite,
+  Assets,
+  Text,
+  TextStyle,
+  Application
+} from 'pixi.js';
+import { GameController } from '../core/GameController';
 
 // - [x] Make the game go anti-clock wise
 // - [ ] Add capturing logic
 // what it should do is just remove the captured number of seeds from the board
 // (i.e., the pit next to the empty one and the pit on the other side of the same pit). and update the score of the player with the number of seeds captured.
 
-const pits = [];
+const pits: Container[] = [];
 let seedIdCounter = 0;
 let playerA_score = 0;
 let playerB_score = 0;
-let turn = null;
-let scoreTextA, scoreTextB, turnText;
+let turn: string | null = null;
+let scoreTextA: Text, scoreTextB: Text, turnText: Text;
+let gameController: GameController;
 
-export function createBoard(app, seedAssets) {
-  turn = "A";
+export function createBoard(
+  app: Application,
+  seedAssets: any,
+  controller?: GameController
+) {
+  if (controller) {
+    gameController = controller;
+  }
+
+  turn = 'A';
 
   const container = new Container();
 
@@ -50,14 +68,21 @@ export function createBoard(app, seedAssets) {
   const topRowY = boardY + 90;
   const bottomRowY = boardY + boardHeight - 90;
 
-  const topPits = [];
-  const bottomPits = [];
+  const topPits: Container[] = [];
+  const bottomPits: Container[] = [];
 
   for (let i = 0; i < 7; i++) {
     const x = startX + i * spacingX;
 
-    const pitTop = createPit(x, topRowY, pitRadius, seedAssets);
-    const pitBottom = createPit(x, bottomRowY, pitRadius, seedAssets);
+    const pitTop = createPit(x, topRowY, pitRadius, seedAssets, 'player1', i);
+    const pitBottom = createPit(
+      x,
+      bottomRowY,
+      pitRadius,
+      seedAssets,
+      'player2',
+      i
+    );
 
     topPits.push(pitTop);
     bottomPits.push(pitBottom);
@@ -77,23 +102,44 @@ export function createBoard(app, seedAssets) {
     pits.push(bottomPits[i]);
   }
 
+  // Register pit sprites with game view if controller exists
+  if (gameController) {
+    const gameView = gameController.gameView;
+    if (gameView && typeof gameView.registerPitSprite === 'function') {
+      // Register top pits (player1)
+      for (let i = 0; i < 7; i++) {
+        gameView.registerPitSprite(
+          { player: 'player1', pitIndex: i },
+          topPits[i]
+        );
+      }
+      // Register bottom pits (player2)
+      for (let i = 0; i < 7; i++) {
+        gameView.registerPitSprite(
+          { player: 'player2', pitIndex: i },
+          bottomPits[i]
+        );
+      }
+    }
+  }
+
   const style = new TextStyle({
     fill: 0x000000,
     fontSize: 72,
-    fontFamily: "Cinzel-SemiBold",
+    fontFamily: 'Cinzel-SemiBold'
   });
 
   const playerA_name = new Text({
-    text: "Player A",
-    style,
+    text: 'Player A',
+    style
   });
 
   playerA_name.x = boardX - 350;
   playerA_name.y = boardY - 10;
 
   const playerB_name = new Text({
-    text: "Player B",
-    style,
+    text: 'Player B',
+    style
   });
 
   playerB_name.x = boardX + boardWidth + 20;
@@ -101,7 +147,7 @@ export function createBoard(app, seedAssets) {
 
   scoreTextA = new Text({
     text: `Score: ${playerA_score}`,
-    style,
+    style
   });
 
   scoreTextA.x = boardX - 350;
@@ -115,7 +161,7 @@ export function createBoard(app, seedAssets) {
 
   scoreTextB = new Text({
     text: `Score: ${playerB_score}`,
-    style,
+    style
   });
   scoreTextB.x = boardX + boardWidth + 20;
   scoreTextB.y = boardY + boardHeight + 50;
@@ -127,8 +173,8 @@ export function createBoard(app, seedAssets) {
   container.setChildIndex(bgPlateB, 0);
 
   turnText = new Text({
-    text: "Turn: Player A",
-    style,
+    text: 'Turn: Player A',
+    style
   });
   turnText.anchor.set(0.5);
   turnText.x = app.screen.width / 2;
@@ -148,24 +194,51 @@ export function createBoard(app, seedAssets) {
     turnText
   );
 
+  // Register score texts and turn text with game view
+  if (gameController) {
+    const gameView = gameController.gameView;
+    if (gameView && typeof gameView.registerScoreText === 'function') {
+      gameView.registerScoreText('player1', scoreTextA);
+      gameView.registerScoreText('player2', scoreTextB);
+      gameView.registerTurnText(turnText);
+    }
+  }
+
   return container;
 }
 
-function createPit(x, y, radius, seedAssets) {
+function createPit(
+  x: number,
+  y: number,
+  radius: number,
+  seedAssets: any,
+  playerSide: 'player1' | 'player2',
+  pitIndex: number
+) {
   const pit = new Container();
 
-  pit.eventMode = "static";
-  pit.cursor = "pointer";
+  pit.eventMode = 'static';
+  pit.cursor = 'pointer';
 
-  pit.on("pointerover", () => {
+  // Store position information for game logic
+  (pit as any).playerSide = playerSide;
+  (pit as any).pitIndex = pitIndex;
+
+  pit.on('pointerover', () => {
     circle.tint = 0x584d47;
   });
 
-  pit.on("pointerout", () => {
+  pit.on('pointerout', () => {
     circle.tint = 0xffffff;
   });
 
-  pit.on("pointerdown", () => distributeSeeds(pit));
+  pit.on('pointerdown', () => {
+    if (gameController) {
+      handlePitClick(pit);
+    } else {
+      distributeSeeds(pit);
+    }
+  });
 
   const circle = new Graphics()
     .circle(0, 0, radius)
@@ -174,7 +247,7 @@ function createPit(x, y, radius, seedAssets) {
 
   pit.addChild(circle);
 
-  const placedSeeds = [];
+  const placedSeeds: { x: number; y: number }[] = [];
 
   for (let i = 0; i < 5; i++) {
     let placed = false;
@@ -201,7 +274,7 @@ function createPit(x, y, radius, seedAssets) {
 
       if (!tooClose) {
         const seedSprite = Sprite.from(
-          Object.values(seedAssets)[
+          (Object as any).values(seedAssets)[
             Math.floor(Math.random() * Object.keys(seedAssets).length)
           ]
         );
@@ -212,7 +285,7 @@ function createPit(x, y, radius, seedAssets) {
         seedSprite.x = sx;
         seedSprite.y = sy;
 
-        seedSprite.seedId = seedIdCounter++;
+        (seedSprite as any).seedId = seedIdCounter++;
 
         pit.addChild(seedSprite);
         placedSeeds.push({ x: sx, y: sy });
@@ -227,19 +300,107 @@ function createPit(x, y, radius, seedAssets) {
   return pit;
 }
 
-let seedsInHand = [];
-let currentPitIndex = null;
-let nextAllowedPitIndex = null;
+function handlePitClick(pit: Container) {
+  const position: Position = {
+    player: (pit as any).playerSide,
+    pitIndex: (pit as any).pitIndex
+  };
+
+  const gameState = gameController.getGameState();
+  const currentPhase = gameState.getGamePhase();
+
+  if (currentPhase === 'picking') {
+    // Handle pick action
+    if (gameController.handlePickClick(position)) {
+      console.log('Valid pick action');
+      // Update visual state
+      updatePitVisual(pit);
+    } else {
+      console.log('Invalid pick action');
+    }
+  } else if (currentPhase === 'sowing') {
+    // Handle sow action
+    if (gameController.handleSowClick(position)) {
+      console.log('Valid sow action');
+      // Update visual state
+      updatePitVisual(pit);
+    } else {
+      console.log('Invalid sow action');
+    }
+  }
+}
+
+function updatePitVisual(pit: Container) {
+  // Update the visual representation based on game state
+  const position: Position = {
+    player: (pit as any).playerSide,
+    pitIndex: (pit as any).pitIndex
+  };
+
+  const gameState = gameController.getGameState();
+  const board = gameState.getBoard();
+  const pitCount = board.getPitCount(position);
+  const isActive = board.isPitActive(position);
+
+  // Update pit appearance based on game state
+  const circle = pit.children[0] as Graphics;
+  if (!isActive) {
+    circle.tint = 0x666666; // Gray out inactive pits
+  } else {
+    circle.tint = 0xffffff;
+  }
+
+  // Update seed count display
+  updatePitSeeds(pit, pitCount);
+}
+
+function updatePitSeeds(pit: Container, targetCount: number) {
+  const currentSeeds = pit.children.slice(1); // All children except the circle
+  const currentCount = currentSeeds.length;
+
+  if (currentCount === targetCount) {
+    return; // No change needed
+  }
+
+  if (currentCount > targetCount) {
+    // Remove excess seeds
+    const toRemove = currentCount - targetCount;
+    for (let i = 0; i < toRemove; i++) {
+      if (currentSeeds[i]) {
+        pit.removeChild(currentSeeds[i]);
+      }
+    }
+  } else {
+    // Add more seeds
+    const toAdd = targetCount - currentCount;
+    for (let i = 0; i < toAdd; i++) {
+      // Create new seed sprite
+      const seedSprite = new Sprite();
+      // Position randomly within pit
+      const radius = 60;
+      const angle = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(Math.random()) * (radius - 15);
+      seedSprite.x = Math.cos(angle) * r;
+      seedSprite.y = Math.sin(angle) * r;
+      seedSprite.scale.set(0.15);
+      pit.addChild(seedSprite);
+    }
+  }
+}
+
+let seedsInHand: any[] = [];
+let currentPitIndex: number | null = null;
+let nextAllowedPitIndex: number | null = null;
 let isEmpty = false;
 
-function distributeSeeds(clickedPit) {
+function distributeSeeds(clickedPit: Container) {
   const clickedIndex = pits.indexOf(clickedPit);
 
-  console.log("seedsInHand.length === 0: ", seedsInHand.length === 0);
-  console.log("isEmpty: ", isEmpty);
+  console.log('seedsInHand.length === 0: ', seedsInHand.length === 0);
+  console.log('isEmpty: ', isEmpty);
 
   if (isEmpty && seedsInHand.length === 0) {
-    console.log("YOUR TURN IS DONE.");
+    console.log('YOUR TURN IS DONE.');
     captureSeeds();
     switchTurn();
     return;
@@ -308,7 +469,7 @@ function distributeSeeds(clickedPit) {
       const oppotisePit = pits[oppositeIndex];
       const oppotisePitSeeds = oppotisePit.children.slice(1);
 
-      let captured = [];
+      let captured: any[] = [];
 
       if (nextPitSeeds.length > 0) {
         captured = captured.concat(nextPitSeeds);
@@ -326,7 +487,7 @@ function distributeSeeds(clickedPit) {
 
       // Update Score
       if (captured.length > 0) {
-        if (turn === "A") {
+        if (turn === 'A') {
           playerA_score += captured.length;
         } else {
           playerB_score += captured.length;
@@ -350,14 +511,14 @@ function distributeSeeds(clickedPit) {
 // to give control back and forth between two players
 function switchTurn() {
   console.log("It's you turn Player B");
-  turn = turn === "A" ? "B" : "A";
+  turn = turn === 'A' ? 'B' : 'A';
   updateTurnNext();
   console.log(`Turn switched Now it's Player ${turn}'s turn.`);
 }
 
 // function to capture seeds that the user has won
 function captureSeeds() {
-  console.log("CAPTURING SEEDS");
+  console.log('CAPTURING SEEDS');
 }
 
 function updateScoreText() {
