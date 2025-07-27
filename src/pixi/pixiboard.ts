@@ -10,6 +10,7 @@ import {
 } from 'pixi.js';
 import { GameController } from '../core/GameController';
 import { PixiGameView } from '../core/GameView';
+import { Game } from '../core/Game';
 
 interface SeedAssets {
   [key: string]: Texture;
@@ -94,23 +95,20 @@ export function createBoard(
   for (let i = 0; i < 7; i++) {
     const x = startX + i * spacingX;
     const pitTop = createPit(
-      x,
-      topRowY,
-      pitRadius,
-      seedAssets,
-      'player1',
-      i,
       app,
+      { player: 'player1', pitIndex: i },
+      controller.getGameState(),
+      seedAssets,
+      handAssets,
       controller
     );
+
     const pitBottom = createPit(
-      x,
-      bottomRowY,
-      pitRadius,
-      seedAssets,
-      'player2',
-      i,
       app,
+      { player: 'player2', pitIndex: i },
+      controller.getGameState(),
+      seedAssets,
+      handAssets,
       controller
     );
 
@@ -198,148 +196,109 @@ export function createBoard(
 }
 
 function createPit(
-  x: number,
-  y: number,
-  radius: number,
-  seedAssets: SeedAssets,
-  playerSide: 'player1' | 'player2',
-  pitIndex: number,
   app: Application,
+  position: Position,
+  gameState: Game,
+  seedAssets: SeedAssets,
+  handAssets: HandAssets,
   controller: GameController
 ): Container {
   const pit = new Container();
+  const { player, pitIndex } = position;
+  const pitRadius = 60;
+  const initialSeeds = gameState.getBoard().getPitCount(position);
+
+  const circle = new Graphics()
+    .circle(0, 0, pitRadius)
+    .fill({ color: 0x8b4513 });
+  pit.addChild(circle);
+
+  const handSprite = Sprite.from(handAssets.hand_open);
+  handSprite.anchor.set(0.5);
+  handSprite.scale.set(0.2);
+  handSprite.position.set(0, -pitRadius - 20); // Above pit
+  handSprite.visible = false;
+  pit.addChild(handSprite);
+
+  // Store hand sprite in app for global cursor tracking
+  (app as any)[`${player}-${pitIndex}-hand`] = handSprite;
+
+  // Update seed visuals
+  controller.gameView.updatePitSeeds(pit, initialSeeds);
+
+  // Add interactivity
   pit.eventMode = 'static';
   pit.cursor = 'pointer';
-  (pit as any).playerSide = playerSide;
-  (pit as any).pitIndex = pitIndex;
 
-  const gameView = controller.gameView as PixiGameView;
-  const gameState = controller.getGameState();
-
-  // Event handlers
-  pit.on('pointerover', () => {
-    const circle = pit.children[0] as Graphics;
-    circle.tint = 0x584d47;
-
-    const phase = gameState.getGamePhase();
-    const inHandBeads = gameState.getInHandBeads();
-    if (
-      phase === 'picking' &&
-      inHandBeads === 0 &&
-      controller.isCurrentPlayerHuman()
-    ) {
-      showHandOpen(app);
-    } else if (phase === 'sowing' && controller.isCurrentPlayerHuman()) {
-      showHandClosed(app);
+  pit.on('pointerdown', () => {
+    if (controller.isCurrentPlayerHuman()) {
+      const player = controller.getCurrentPlayerInfo();
+      if (player.isHuman) {
+        controller.handlePickClick(
+          gameState.getPlayers().get(player.side)!,
+          position
+        );
+      }
+      if (controller.getGameState().getGamePhase() === 'sowing') {
+        controller.handleSowClick(position);
+      }
     }
+  });
+
+  pit.on('pointerover', () => {
+    updateHandVisibility(app, position, controller, handAssets);
   });
 
   pit.on('pointerout', () => {
-    const circle = pit.children[0] as Graphics;
-    circle.tint = 0xffffff;
-    hideHands(app);
+    handSprite.visible = false;
   });
 
-  pit.on('pointerdown', () => {
-    const position: Position = { player: playerSide, pitIndex };
-    const currentPlayer = gameState.getCurrentPlayer();
-
-    if (gameState.getGamePhase() === 'picking') {
-      if (controller.handlePickClick(currentPlayer, position)) {
-        gameView.animateSowing(position, position).then(() => {
-          gameView.render(gameState);
-        });
-      }
-    } else if (gameState.getGamePhase() === 'sowing') {
-      if (controller.handleSowClick(position)) {
-        const lastPosition = gameState.getLastSowPosition()!;
-        gameView.animateSowing(lastPosition, position).then(() => {
-          gameView.render(gameState);
-        });
-      }
-    }
-  });
-
-  // Draw pit
-  const circle = new Graphics()
-    .circle(0, 0, radius)
-    .fill({ color: 0x795548 })
-    .stroke({ width: 4, color: 0x000000 });
-  pit.addChild(circle);
-
-  // Initialize seeds based on Board state
-  const initialSeeds = gameState
-    .getBoard()
-    .getPitCount({ player: playerSide, pitIndex });
-  const placedSeeds: { x: number; y: number }[] = [];
-
-  for (let i = 0; i < initialSeeds; i++) {
-    let placed = false;
-    let attempts = 0;
-
-    while (!placed && attempts < 10) {
-      attempts++;
-      const angle = Math.random() * Math.PI * 2;
-      const r = Math.sqrt(Math.random()) * (radius - 15);
-      const sx = Math.cos(angle) * r;
-      const sy = Math.sin(angle) * r;
-
-      let tooClose = false;
-      for (const pos of placedSeeds) {
-        const dx = pos.x - sx;
-        const dy = pos.y - sy;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 25) {
-          tooClose = true;
-          break;
-        }
-      }
-
-      if (!tooClose) {
-        const seedSprite = Sprite.from(
-          Object.values(seedAssets)[
-            Math.floor(Math.random() * Object.keys(seedAssets).length)
-          ]
-        );
-        seedSprite.anchor.set(0.5);
-        seedSprite.scale.set(0.15);
-        seedSprite.x = sx;
-        seedSprite.y = sy;
-        pit.addChild(seedSprite);
-        placedSeeds.push({ x: sx, y: sy });
-        placed = true;
-      }
-    }
-  }
-
-  pit.x = x;
-  pit.y = y;
   return pit;
 }
 
-function showHandOpen(app: Application) {
-  const handOpenSprite = (app as any).handOpenSprite;
-  const handClosedSprite = (app as any).handClosedSprite;
-  if (handOpenSprite && handClosedSprite) {
-    handOpenSprite.visible = true;
-    handClosedSprite.visible = false;
-  }
-}
+function updateHandVisibility(
+  app: Application,
+  position: Position,
+  controller: GameController,
+  handAssets: HandAssets
+): void {
+  const { player, pitIndex } = position;
+  const handSprite = (app as any)[`${player}-${pitIndex}-hand`] as Sprite;
+  const gameState = controller.getGameState();
+  const board = gameState.getBoard();
+  const currentPlayer = gameState.getCurrentPlayer();
 
-function showHandClosed(app: Application) {
-  const handOpenSprite = (app as any).handOpenSprite;
-  const handClosedSprite = (app as any).handClosedSprite;
-  if (handOpenSprite && handClosedSprite) {
-    handOpenSprite.visible = false;
-    handClosedSprite.visible = true;
-  }
-}
-
-function hideHands(app: Application) {
-  const handOpenSprite = (app as any).handOpenSprite;
-  const handClosedSprite = (app as any).handClosedSprite;
-  if (handOpenSprite && handClosedSprite) {
-    handOpenSprite.visible = false;
-    handClosedSprite.visible = false;
+  if (gameState.getGamePhase() === 'picking') {
+    // Show open hand on valid pits for current player
+    if (
+      position.player === currentPlayer.getPlayerSide() &&
+      board.isPitActive(position) &&
+      !board.isPitEmpty(position)
+    ) {
+      handSprite.texture = handAssets.hand_open;
+      handSprite.visible = true;
+    } else {
+      handSprite.visible = false;
+    }
+  } else if (gameState.getGamePhase() === 'sowing') {
+    // Show closed hand on next valid sow position when holding seeds
+    const lastSowPosition = gameState.getLastSowPosition();
+    if (lastSowPosition && gameState.getInHandBeads() > 0) {
+      const nextPosition = board.getNextPosition(lastSowPosition);
+      if (
+        position.player === nextPosition.player &&
+        position.pitIndex === nextPosition.pitIndex
+      ) {
+        handSprite.texture = handAssets.hand_closed;
+        handSprite.visible = true;
+      } else {
+        handSprite.visible = false;
+      }
+    } else {
+      handSprite.visible = false;
+    }
+  } else {
+    // Hide hand in ended phase
+    handSprite.visible = false;
   }
 }

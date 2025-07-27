@@ -2,10 +2,14 @@ import { initApp } from './pixi/initApp';
 import { createBoard } from './pixi/pixiboard';
 import { createSeeds } from './pixi/seeds.js';
 import { createTitleText } from './pixi/textBanner.js';
-import { Assets, Sprite } from 'pixi.js';
+import { Assets, Sprite, Texture } from 'pixi.js';
 import { createPlayer, Player } from './core/Player';
 import { GameController } from './core/GameController';
 import { PixiGameView } from './core/GameView';
+
+interface SeedAssets {
+  [key: string]: Texture;
+}
 
 (async () => {
   try {
@@ -17,7 +21,7 @@ import { PixiGameView } from './core/GameView';
     await Assets.init({ manifest: '/manifest.json' });
     console.log('Assets initialized');
 
-    const seedAssets = await Assets.loadBundle('seeds');
+    const seedAssets: SeedAssets = await Assets.loadBundle('seeds');
     console.log('Seed assets loaded');
 
     const handAssets = await Assets.loadBundle('hands');
@@ -68,7 +72,8 @@ import { PixiGameView } from './core/GameView';
       app,
       seedAssets,
       gameView,
-      config
+      config,
+      handAssets
     );
     console.log('Board added to stage');
 
@@ -85,6 +90,7 @@ import { PixiGameView } from './core/GameView';
 
     // - [ ] TODO: Clarity purpose; may be redundant with board.ts
     const seeds = await createSeeds(app);
+    seeds.forEach((seed) => app.stage.addChild(seed));
     const title = createTitleText(app);
 
     seeds.forEach((seed) => app.stage.addChild(seed));

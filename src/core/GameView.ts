@@ -12,8 +12,13 @@ interface SeedAssets {
   [key: string]: Texture;
 }
 
+interface HandAssets {
+  hand_open: Texture;
+  hand_closed: Texture;
+}
+
 export interface GameView {
-  render(gameState: Game): void;
+  render(gameState: Game, handAssets: HandAssets): void;
   highlightValidMoves(positions: Position[]): void;
   animateSowing(from: Position, to: Position): Promise<void>;
   showCapture(positions: Position[]): Promise<void>;
@@ -29,10 +34,16 @@ export class PixiGameView implements GameView {
   private scoreTexts: Map<string, Text> = new Map();
   private turnText: Text | null = null;
   private seedAssets: SeedAssets;
+  private handAssets: HandAssets;
 
-  constructor(app: Application, seedAssets: SeedAssets) {
+  constructor(
+    app: Application,
+    seedAssets: SeedAssets,
+    handAssets: HandAssets
+  ) {
     this.app = app;
     this.seedAssets = seedAssets;
+    this.handAssets = handAssets;
     this.setupBoard();
   }
 
@@ -151,6 +162,72 @@ export class PixiGameView implements GameView {
           }
         }
       }
+    }
+
+    // Update hand visibility after seed changes
+    const position = Array.from(this.pitSprites.entries()).find(
+      ([_, sprite]) => sprite === pit
+    )?.[0];
+    if (position) {
+      const pos = position.split('-');
+      this.updateHandVisibility({
+        player: pos[0] as 'player1' | 'player2',
+        pitIndex: parseInt(pos[1])
+      });
+    }
+  }
+
+  private updateHandVisibility(position: Position): void {
+    const key = `${position.player}-${position.pitIndex}`;
+    const pit = this.pitSprites.get(key);
+    if (!pit) return;
+
+    const handSprite = pit.children[1] as Sprite; // Hand is second child
+    const game = this.app.stage.children.find((c) => c.name === 'game');
+    const controllerContainer = game?.children.find(
+      (c) => c.name === 'controller'
+    );
+    const gameState = controllerContainer?.['controller']?.getGameState();
+
+    // const gameState = this.app.stage
+    //   .getChildByName('game')
+    //   ?.getChildByName('controller')
+    //   ?.['controller']?.getGameState();
+
+    if (!gameState) return;
+
+    const board = gameState.getBoard();
+    const currentPlayer = gameState.getCurrentPlayer();
+
+    if (gameState.getGamePhase() === 'picking') {
+      if (
+        position.player == currentPlayer.getPlayerSide() &&
+        board.isPitActive(position) &&
+        !board.isPitEmpty(position)
+      ) {
+        handSprite.texture = this.handAssets.hand_open;
+        handSprite.visible = true;
+      } else {
+        handSprite.visible = false;
+      }
+    } else if (gameState.getGamePhase() === 'sowing') {
+      const lastSowPosition = gameState.getLastSowPosition();
+      if (lastSowPosition && gameState.getInHandBeads() > 0) {
+        const nextPosition = board.getNextPosition(lastSowPosition);
+        if (
+          position.player === nextPosition.player &&
+          position.pitIndex === nextPosition.pitIndex
+        ) {
+          handSprite.texture = this.handAssets.hand_closed;
+          handSprite.visible = true;
+        } else {
+          handSprite.visible = false;
+        }
+      } else {
+        handSprite.visible = false;
+      }
+    } else {
+      handSprite.visible = false;
     }
   }
 

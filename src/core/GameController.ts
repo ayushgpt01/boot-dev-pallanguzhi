@@ -13,6 +13,11 @@ interface SeedAssets {
   [key: string]: Texture;
 }
 
+interface HandAssets {
+  hand_open: Texture;
+  hand_closed: Texture;
+}
+
 export class GameController {
   private gameState: Game;
   public gameView: GameView;
@@ -20,6 +25,7 @@ export class GameController {
   private isPaused: boolean = false;
   private pauseResolver: ((value: void) => void) | null = null;
   private currentTurnResolver: ((value: void) => void) | null = null;
+  private handAssets: HandAssets;
 
   constructor(
     player1: Player,
@@ -27,10 +33,12 @@ export class GameController {
     app: Application,
     seedAssets: SeedAssets,
     gameView: GameView,
-    config: GameConfig
+    config: GameConfig,
+    handAssets: HandAssets
   ) {
     this.gameState = new Game(player1, player2, config);
     this.gameView = gameView;
+    this.handAssets = handAssets;
     this.eventEmitter = new EventTarget();
 
     this.setupEventListeners();
@@ -379,6 +387,8 @@ export class GameController {
 
   private updateView(): void {
     this.gameView.render(this.gameState);
+    // - [ ] TODO update this to use the second arguments as well
+    // this.gameView.render(this.gameState, this.handAssets);
   }
 
   private emitStateChange(): void {
