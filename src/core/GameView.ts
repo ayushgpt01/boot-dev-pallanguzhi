@@ -132,7 +132,8 @@ export class PixiGameView implements GameView {
         let placed = false;
         let attempts = 0;
 
-        while (!placed && attempts < 10) {
+        // this gives more changes to find a free spot, reducing the changes of early bailout (30)
+        while (!placed && attempts < 30) {
           attempts++;
           const angle = Math.random() * Math.PI * 2;
           const r = Math.sqrt(Math.random()) * (radius - 15);
@@ -164,6 +165,21 @@ export class PixiGameView implements GameView {
             placedSeeds.push({ x: sx, y: sy });
             placed = true;
           }
+
+          // if (!placed) {
+          //   // Just place it anyway without checking
+          //   const sx = Math.random() * 2 * radius - radius;
+          //   const sy = Math.random() * 2 * radius - radius;
+          //   const seedSprite = Sprite.from(
+          //     Object.values(this.seedAssets)[
+          //       Math.floor(Math.random() * Object.keys(this.seedAssets).length)
+          //     ]
+          //   );
+
+          //   seedSprite.x = sx;
+          //   seedSprite.y = sy;
+          //   pit.addChild(seedSprite);
+          // }
         }
       }
     }
