@@ -1,18 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="/src/style.css" rel="stylesheet" />
-    <title>PixiJS - Template</title>
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pallanguzhi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preload" href="/assets/Background.png" as="image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'IM Fell English SC', serif;
+      background: url('/assets/Background.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+  </style>
+</head>
 
-  <body>
-    <h1 class="text-3xl font-bold underline">Hello world!</h1>
-    <div id="app">
-      <div id="pixi-container"></div>
+<body class="flex items-center justify-center">
+  <div class="text-center w-full space-y-20">
+    <h1 class="text-9xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] sm:text-7xl md:text-8xl lg:text-9xl break-words">PALLANGUZHI</h1>
+    <button class="text-7xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition" id="start-btn">
+      Start Game
+    </button>
+    <div>
+      <button class="text-7xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition" id="how-to-btn">
+        How to Play
+      </button>
     </div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+  </div>
+
+  <script type="module">
+    const startBtn = document.getElementById('start-btn');
+    const howToBtn = document.getElementById('how-to-btn');
+
+    if (startBtn) {
+      startBtn.addEventListener('click', () => {
+        window.location.href = '/game.html';
+      });
+    }
+
+    if (howToBtn) {
+      howToBtn.addEventListener('click', () => {
+        window.location.href = '/how-to.html';
+      });
+    }
+  </script>
+
+  <footer class="absolute bottom-0 w-full text-center text-[#4b2c18] pb-4 text-xl drop-shadow-[2px_2px_0_#f3f1db]">
+    © 2025 Pallanguzhi. All rights reserved.
+  </footer>
+</body>
 </html>
