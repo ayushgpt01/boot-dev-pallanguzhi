@@ -59,7 +59,7 @@ interface SeedAssets {
     );
     const config: GameConfig = {
       pitsPerPlayer: 7,
-      initialSeeds: 5,
+      initialBeads: 5,
       maxDistributions: 2
     };
 
