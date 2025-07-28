@@ -132,8 +132,6 @@ export class PixiGameView implements GameView {
   ): void {
     const currentSeeds = pit.children.slice(2); // All children except the circle
     const currentCount = currentSeeds.length;
-    console.log('currentSeeds: ', currentSeeds);
-    console.log('currentCount: ', currentCount);
 
     if (currentCount === targetCount) {
       if (beadText) beadText.text = targetCount.toString();

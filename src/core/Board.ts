@@ -102,14 +102,13 @@ export class Board {
   getOppositePosition(position: Position): Position {
     const oppositePlayer =
       position.player === 'player1' ? 'player2' : 'player1';
-    const oppositePitIndex = this.config.pitsPerPlayer - 1 - position.pitIndex;
+    // const oppositePitIndex = this.config.pitsPerPlayer - 1 - position.pitIndex;
+    // Same Index for capture on the other side of the board
+    const oppositePitIndex = position.pitIndex;
     return { player: oppositePlayer, pitIndex: oppositePitIndex };
   }
 
   getNextPosition(currentPosition: Position): Position {
-    console.log('currentPosition from getNextPosition: ', currentPosition);
-
-    // const currentPlayerIndex = currentPosition.player === 'player1' ? 0 : 1;
     const nextPitIndex = currentPosition.pitIndex + 1;
 
     if (nextPitIndex < this.config.pitsPerPlayer) {
@@ -135,7 +134,6 @@ export class Board {
       activePits: [[...this.activePits[0]], [...this.activePits[1]]]
     };
 
-    console.log('Board State Pits:', state.pits);
     return state;
   }
 }

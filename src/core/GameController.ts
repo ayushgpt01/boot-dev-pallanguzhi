@@ -158,8 +158,6 @@ export class GameController {
    * Only current human player can sow
    */
   handleSowClick(position: Position): boolean {
-    console.log('hello from sow click');
-
     const currentPlayer = this.gameState.getCurrentPlayer();
 
     // Only human players can manually sow
@@ -209,6 +207,8 @@ export class GameController {
    * Handle right mouse button - PICK action
    */
   handlePickClick(player: Player, position: Position): boolean {
+    console.log('from handlePickClick: ', player, position);
+
     // Only human players can manually pick
     if (!isHumanPlayer(player)) {
       return false;
@@ -220,9 +220,9 @@ export class GameController {
     }
 
     // Player can only pick from their own side
-    if (position.player !== player.getPlayerSide()) {
-      return false;
-    }
+    // if (position.player !== player.getPlayerSide()) {
+    //   return false;
+    // }
 
     try {
       this.pickBeads(position);
@@ -234,6 +234,8 @@ export class GameController {
   }
 
   private completeTurn(): void {
+    console.log('hello from completeTurn');
+
     this.eventEmitter.dispatchEvent(new CustomEvent('turnCompleted'));
   }
 
@@ -348,12 +350,18 @@ export class GameController {
     board.addToStore(currentPlayer.getPlayerSide(), capturedBeads);
   }
 
+  /**
+   * Checks if the given position can be picked from by the current player.
+   * Must be the current player's pit, must be active and not empty, and must be in the picking phase.
+   * @param position The position to check
+   * @returns True if the position can be picked from, false otherwise.
+   */
   private canPickFrom(position: Position): boolean {
     const board = this.gameState.getBoard();
     const currentPlayer = this.gameState.getCurrentPlayer();
 
     return (
-      position.player === currentPlayer.getPlayerSide() &&
+      // position.player === currentPlayer.getPlayerSide() &&
       board.isPitActive(position) &&
       !board.isPitEmpty(position) &&
       this.gameState.getGamePhase() === 'picking'
