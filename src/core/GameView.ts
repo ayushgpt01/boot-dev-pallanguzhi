@@ -4,7 +4,8 @@ import {
   Container,
   Graphics,
   Text,
-  Texture
+  Texture,
+  TextStyle
 } from 'pixi.js';
 import { Game } from './Game';
 import { GameController } from './GameController';
@@ -35,6 +36,12 @@ interface HandAssets {
   hand_closed: Texture;
 }
 
+declare module 'pixi.js' {
+  interface Container {
+    beadCountText?: Text;
+  }
+}
+
 export class PixiGameView implements GameView {
   private app: Application;
   private pitSprites: Map<string, Container> = new Map();
@@ -43,6 +50,7 @@ export class PixiGameView implements GameView {
   private turnText: Text | null = null;
   private seedAssets: SeedAssets;
   private handAssets: HandAssets;
+  private inHandText: Text;
 
   constructor(
     app: Application,
@@ -52,6 +60,20 @@ export class PixiGameView implements GameView {
     this.app = app;
     this.seedAssets = seedAssets;
     this.handAssets = handAssets;
+    const style = new TextStyle({
+      fill: 0xffffff,
+      fontSize: 20,
+      fontFamily: 'Playwrite US Trad'
+    });
+
+    const text = new Text({
+      text: 'Seeds in Hand: 0',
+      style
+    });
+
+    this.inHandText = text;
+    this.inHandText.position.set(50, 30);
+    this.app.stage.addChild(this.inHandText);
     this.setupBoard();
   }
   onOpponentJoined(playerName: string): void {
@@ -103,6 +125,8 @@ export class PixiGameView implements GameView {
     this.updateStoreVisual('player1', stores[0]);
     this.updateStoreVisual('player2', stores[1]);
 
+    this.updateInHandText(gameState.getInHandBeads().toString());
+
     // Update turn display
     this.updateTurnDisplay(gameState);
 
@@ -135,7 +159,7 @@ export class PixiGameView implements GameView {
     targetCount: number,
     gameState: Game
   ): void {
-    const currentSeeds = pit.children.slice(1); // All children except the circle
+    const currentSeeds = pit.children.slice(2); // All children except the circle
     const currentCount = currentSeeds.length;
 
     if (currentCount === targetCount) {
@@ -160,8 +184,7 @@ export class PixiGameView implements GameView {
         let placed = false;
         let attempts = 0;
 
-        // this gives more changes to find a free spot, reducing the changes of early bailout (30)
-        while (!placed && attempts < 30) {
+        while (!placed && attempts < 50) {
           attempts++;
           const angle = Math.random() * Math.PI * 2;
           const r = Math.sqrt(Math.random()) * (radius - 15);
@@ -310,6 +333,10 @@ export class PixiGameView implements GameView {
     }
 
     this.highlightValidMoves(validPositions);
+  }
+
+  private updateInHandText(count: string): void {
+    this.inHandText.text = `Seeds in Hand: ${count}`;
   }
 
   highlightValidMoves(positions: Position[]): void {
