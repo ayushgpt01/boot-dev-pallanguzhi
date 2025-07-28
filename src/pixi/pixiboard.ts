@@ -11,6 +11,7 @@ import {
 import { GameController } from '../core/GameController';
 import { PixiGameView } from '../core/GameView';
 import { Game } from '../core/Game';
+import { Position } from '../types/GameTypes';
 
 interface SeedAssets {
   [key: string]: Texture;

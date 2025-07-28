@@ -56,4 +56,4 @@ http://localhost:5173
 
 ## 🙌 Acknowledgements
 
-- Inspired by the traditional game of **Pallanguzhi**.  
+- Inspired by the traditional game of **Pallanguzhi**.

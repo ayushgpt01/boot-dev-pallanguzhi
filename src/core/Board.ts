@@ -1,5 +1,7 @@
 // Pallankuli (Aluguli Mane) Game Rules -
 
+import { BoardState, GameConfig, Position } from '../types/GameTypes';
+
 // Core Game Elements:
 // - 2 players
 // - 14 pits (or "houses"): 7 active pits per player (total 14)

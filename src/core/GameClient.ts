@@ -1,3 +1,19 @@
+/* eslint-disable no-undef */
+import {
+  ErrorMessage,
+  GameConfig,
+  GameEndedMessage,
+  GamePausedMessage,
+  GameResumedMessage,
+  GameStateUpdateMessage,
+  PlayerJoinedMessage,
+  PlayerLeftMessage,
+  PlayerReconnectedMessage,
+  Position,
+  RoomJoinedMessage,
+  SerializedGameState,
+  WSMessage
+} from '../types/GameTypes';
 import { GameController } from './GameController';
 import { GameView } from './GameView';
 import { createPlayer, Player, RemotePlayer } from './Player';
@@ -431,7 +447,7 @@ export class GameClient {
 
   // ---- Event Emitter ----
 
-  private emitEvent(eventType: EventTypes, data?: any): void {
+  private emitEvent(eventType: EventTypes, data?: unknown): void {
     this.eventEmitter.dispatchEvent(
       new CustomEvent(eventType, { detail: data })
     );

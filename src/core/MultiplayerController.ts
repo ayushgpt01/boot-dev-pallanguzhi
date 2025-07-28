@@ -1,3 +1,4 @@
+import { GameConfig, Position } from '../types/GameTypes';
 import { EventTypes, GameClient } from './GameClient';
 import { GameController } from './GameController';
 import { GameView } from './GameView';

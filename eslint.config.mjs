@@ -1,25 +1,12 @@
 import js from '@eslint/js';
-import prettier from 'eslint-plugin-prettier/recommended';
+import globals from 'globals';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 
 /** @type {import("eslint").FlatConfigItem[]} */
 export default [
-  { ignores: ['dist'] },
-
-  // JS Config
-  {
-    files: ['**/*.{js,jsx}'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module'
-    },
-    plugins: {
-      prettier
-    },
-    rules: {},
-    extends: [js.configs.recommended, prettier]
-  },
+  { ignores: ['dist', 'server'] },
+  js.configs.recommended,
 
   // TS Config
   {
@@ -27,15 +14,19 @@ export default [
     languageOptions: {
       parser: tsparser,
       ecmaVersion: 'latest',
-      sourceType: 'module'
+      sourceType: 'module',
+      globals: {
+        ...globals.browser, // ✅ For `window`, `console`, `EventTarget`, etc.
+        ...globals.es2021,
+        ...globals.dom
+      }
     },
     plugins: {
-      '@typescript-eslint': tseslint,
-      prettier
+      '@typescript-eslint': tseslint
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      'prettier/prettier': 'warn',
+      // 'prettier/prettier': 'warn',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['warn']
     }

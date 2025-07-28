@@ -1,3 +1,4 @@
+import { Position } from '../types/GameTypes';
 import { Game } from './Game';
 
 export abstract class Player {

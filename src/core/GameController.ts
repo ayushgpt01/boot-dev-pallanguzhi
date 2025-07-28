@@ -1,3 +1,4 @@
+import { GameConfig, Position, SerializedGameState } from '../types/GameTypes';
 import { Game } from './Game';
 import { GameView } from './GameView';
 import { AIPlayer, isAIPlayer, isHumanPlayer, Player } from './Player';

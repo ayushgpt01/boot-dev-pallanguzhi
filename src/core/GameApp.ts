@@ -1,3 +1,4 @@
+import { GameConfig, Position } from '../types/GameTypes';
 import { GameClient } from './GameClient';
 import { GameView } from './GameView';
 import { MultiplayerGameController } from './MultiplayerController';
@@ -124,7 +125,7 @@ export class MultiplayerGameApp {
     }
   }
 
-  private updateUI(eventType: string, data?: any): void {
+  private updateUI(eventType: string, data?: unknown): void {
     // Update UI based on events - Example
     // const event = new CustomEvent('gameAppEvent', {
     //   detail: { type: eventType, data }

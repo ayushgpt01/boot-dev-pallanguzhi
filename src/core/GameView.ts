@@ -9,6 +9,7 @@ import {
 } from 'pixi.js';
 import { Game } from './Game';
 import { GameController } from './GameController';
+import { Position } from '../types/GameTypes';
 
 interface SeedAssets {
   [key: string]: Texture;

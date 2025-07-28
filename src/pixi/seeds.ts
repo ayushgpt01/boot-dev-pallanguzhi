@@ -6,6 +6,7 @@ export async function createSeeds(app: Application) {
 
   for (let i = 0; i < 5; i++) {
     const seedSprite = Sprite.from(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (Object as any).values(seedAssets)[
         Math.floor(Math.random() * Object.keys(seedAssets).length)
       ]

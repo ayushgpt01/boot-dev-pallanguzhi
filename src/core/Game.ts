@@ -1,3 +1,4 @@
+import { GameConfig, Position, SerializedGameState } from '../types/GameTypes';
 import { Board } from './Board';
 import { Player } from './Player';
 
