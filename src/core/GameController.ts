@@ -67,6 +67,7 @@ export class GameController {
   }
 
   async startGame(): Promise<void> {
+    console.log('Starting game loop');
     while (!this.gameState.isGameOver()) {
       await this.playTurn();
     }
@@ -74,6 +75,11 @@ export class GameController {
   }
 
   private async playTurn(): Promise<void> {
+    console.log(
+      'Starting playTurn for',
+      this.gameState.getCurrentPlayer().getName()
+    );
+
     const currentPlayer = this.gameState.getCurrentPlayer();
 
     // Wait if game is paused
@@ -123,10 +129,18 @@ export class GameController {
     // Wait until turn is completed (phase returns to picking with no beads in hand)
     return new Promise((resolve) => {
       this.currentTurnResolver = resolve;
+      console.log('Resolver set for human turn');
 
       // Set up a backup check in case events don't fire properly
       // NOTE - If game ends prematurely check here
       const checkTurnComplete = () => {
+        console.log(
+          'Checking turn complete, phase:',
+          this.gameState.getGamePhase(),
+          'beads:',
+          this.gameState.getInHandBeads()
+        );
+
         if (
           this.gameState.getGamePhase() === 'picking' &&
           this.gameState.getInHandBeads() === 0

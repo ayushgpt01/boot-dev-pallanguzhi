@@ -139,7 +139,7 @@ export class PixiGameView implements GameView {
   ): void {
     const currentSeeds = pit.children.slice(2); // All children except the circle
     const currentCount = currentSeeds.length;
-    console.log(`Target: ${targetCount}, Current: ${currentCount}`);
+    // console.log(`Target: ${targetCount}, Current: ${currentCount}`);
 
     if (currentCount === targetCount) {
       const beadText = pit['beadCountText'] as Text | undefined;

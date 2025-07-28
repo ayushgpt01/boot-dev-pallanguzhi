@@ -95,6 +95,9 @@ interface SeedAssets {
 
     controller.updateView();
 
+    console.log('Starting game loop');
+    await controller.startGame();
+
     // to force an initial render
     // controller.gameView.render(
     //   controller.getGameState()
