@@ -66,22 +66,13 @@ interface SeedAssets {
     let gameView = new PixiGameView(app, seedAssets, handAssets, null as any); // Temporary null controller
     console.log('PixiGameView initialized');
 
-    const controller = new GameController(
-      player1,
-      player2,
-      app,
-      seedAssets,
-      gameView,
-      config,
-      handAssets
-    );
+    const controller = new GameController(player1, player2, gameView, config);
     console.log('Board added to stage');
 
     // Initialization
     //controller.initializeBoard();
 
     gameView = new PixiGameView(app, seedAssets, handAssets, controller); // Reassign with real controller
-    controller.gameView = gameView;
 
     // Create board without game controller for now
     const board = createBoard(

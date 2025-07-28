@@ -92,6 +92,20 @@ export class HumanPlayer extends Player {
   }
 }
 
+export class RemotePlayer extends Player {
+  constructor(id: string, name: string, side: 'player1' | 'player2') {
+    super(id, name, side);
+  }
+
+  isHuman(): boolean {
+    return true; // Remote players are human players
+  }
+
+  async makeMove(gameState: Game): Promise<Position> {
+    throw new Error('RemotePlayer moves are handled via WebSocket messages');
+  }
+}
+
 export class AIPlayer extends Player {
   private difficulty: 'easy' | 'medium' | 'hard';
 

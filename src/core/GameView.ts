@@ -22,6 +22,12 @@ export interface GameView {
   registerScoreText(player: string, text: Text): void;
   registerTurnText(text: Text): void;
   updatePitSeeds(pit: Container, targetCount: number): void;
+  onOpponentJoined(playerName: string): void;
+  onOpponentDisconnected(): void;
+  onOpponentReconnected(): void;
+  onGamePaused(pausedBy: string): void;
+  onGameResumed(resumedBy: string): void;
+  onGameEnded(reason: 'vote' | 'disconnect' | string): void;
 }
 
 interface HandAssets {
@@ -49,6 +55,24 @@ export class PixiGameView implements GameView {
     this.handAssets = handAssets;
     this.controller = controller;
     this.setupBoard();
+  }
+  onOpponentJoined(playerName: string): void {
+    // Update player list
+  }
+  onOpponentDisconnected(): void {
+    // Update player list
+  }
+  onOpponentReconnected(): void {
+    // Update player list
+  }
+  onGamePaused(pausedBy: string): void {
+    // Update UI
+  }
+  onGameResumed(resumedBy: string): void {
+    // Update UI
+  }
+  onGameEnded(reason: 'vote' | 'disconnect' | string): void {
+    // Update UI
   }
 
   // handled in board.ts
@@ -210,7 +234,7 @@ export class PixiGameView implements GameView {
     if (!pit) return;
 
     const handSprite = pit.children[1] as Sprite; // Hand is second child
-    const gameState = this.controller.getGameState();
+    const gameState = this.controller.getGameInstance();
 
     if (!gameState) return;
 

@@ -1,13 +1,7 @@
 import { Application, Texture } from 'pixi.js';
 import { Game } from './Game';
-import { GameView, PixiGameView } from './GameView';
-import {
-  AIPlayer,
-  HumanPlayer,
-  isAIPlayer,
-  isHumanPlayer,
-  Player
-} from './Player';
+import { GameView } from './GameView';
+import { AIPlayer, isAIPlayer, isHumanPlayer, Player } from './Player';
 
 interface SeedAssets {
   [key: string]: Texture;
@@ -20,25 +14,22 @@ interface HandAssets {
 
 export class GameController {
   private gameState: Game;
-  public gameView: GameView;
+  private gameView: GameView;
+  private config: GameConfig;
   private eventEmitter: EventTarget;
   private isPaused: boolean = false;
   private pauseResolver: ((value: void) => void) | null = null;
   private currentTurnResolver: ((value: void) => void) | null = null;
-  private handAssets: HandAssets;
 
   constructor(
     player1: Player,
     player2: Player,
-    app: Application,
-    seedAssets: SeedAssets,
     gameView: GameView,
-    config: GameConfig,
-    handAssets: HandAssets
+    config: GameConfig
   ) {
     this.gameState = new Game(player1, player2, config);
+    this.config = config;
     this.gameView = gameView;
-    this.handAssets = handAssets;
     this.eventEmitter = new EventTarget();
 
     this.setupEventListeners();
@@ -206,7 +197,8 @@ export class GameController {
   /**
    * Handle right mouse button - PICK action
    */
-  handlePickClick(player: Player, position: Position): boolean {
+  handlePickClick(position: Position): boolean {
+    const player = this.gameState.getCurrentPlayer();
     // Only human players can manually pick
     if (!isHumanPlayer(player)) {
       return false;
@@ -232,6 +224,7 @@ export class GameController {
   }
 
   private completeTurn(): void {
+    this.endTurn();
     this.eventEmitter.dispatchEvent(new CustomEvent('turnCompleted'));
   }
 
@@ -359,11 +352,11 @@ export class GameController {
   }
 
   private endTurn(): void {
-    this.gameState.switchPlayer();
-    this.gameState.reset();
-
     if (this.isRoundComplete()) {
       this.endRound();
+    } else {
+      this.gameState.switchPlayer();
+      this.gameState.reset();
     }
   }
 
@@ -373,20 +366,45 @@ export class GameController {
 
   private endRound(): void {
     this.applyPauperLogic();
-    // Start new round or end game
   }
 
   private applyPauperLogic(): void {
-    // Implementation for pauper logic
+    const board = this.gameState.getBoard();
+
+    for (let playerIndex = 0; playerIndex < 2; playerIndex++) {
+      const player = playerIndex === 0 ? 'player1' : 'player2';
+      let store = board.getStoreCount(player);
+
+      for (let pitIndex = 0; pitIndex < this.config.pitsPerPlayer; pitIndex++) {
+        const pos: Position = { player, pitIndex };
+        const current = board.getPitCount(pos);
+
+        if (store > 0 && current < this.config.initialBeads) {
+          const toAdd = Math.min(this.config.initialBeads - current, store);
+          store -= toAdd;
+          board.setPitCount(pos, current + toAdd);
+        }
+
+        if (board.getPitCount(pos) < this.config.initialBeads) {
+          board.deactivatePit(pos);
+        }
+      }
+
+      board.updateStoreCount(player, store);
+    }
   }
 
-  private endGame(): void {
+  endGame(): void {
     this.gameState.setGamePhase('ended');
     this.emitStateChange();
   }
 
   private updateView(): void {
     this.gameView.render(this.gameState);
+  }
+
+  getGameViewInstance(): GameView {
+    return this.gameView;
   }
 
   private emitStateChange(): void {
@@ -451,7 +469,11 @@ export class GameController {
     };
   }
 
-  getGameState(): Game {
+  getGameInstance(): Game {
     return this.gameState;
+  }
+
+  getGameState(): SerializedGameState {
+    return this.gameState.getGameState();
   }
 }

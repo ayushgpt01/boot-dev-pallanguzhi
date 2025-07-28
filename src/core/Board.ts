@@ -43,8 +43,8 @@ export class Board {
   constructor(config: GameConfig) {
     this.config = config;
     this.pits = [
-      new Array(this.config.pitsPerPlayer).fill(this.config.initialSeeds),
-      new Array(this.config.pitsPerPlayer).fill(this.config.initialSeeds)
+      new Array(this.config.pitsPerPlayer).fill(this.config.initialBeads),
+      new Array(this.config.pitsPerPlayer).fill(this.config.initialBeads)
     ];
     this.stores = [0, 0];
     this.activePits = [
@@ -53,19 +53,23 @@ export class Board {
     ];
   }
 
+  private getPlayerIndex(player: 'player1' | 'player2'): number {
+    return this.getPlayerIndex(player);
+  }
+
   // Pit operations
   getPitCount(position: Position): number {
-    const playerIndex = position.player === 'player1' ? 0 : 1;
+    const playerIndex = this.getPlayerIndex(position.player);
     return this.pits[playerIndex][position.pitIndex];
   }
 
   setPitCount(position: Position, count: number): void {
-    const playerIndex = position.player === 'player1' ? 0 : 1;
+    const playerIndex = this.getPlayerIndex(position.player);
     this.pits[playerIndex][position.pitIndex] = count;
   }
 
   incrementPit(position: Position): void {
-    const playerIndex = position.player === 'player1' ? 0 : 1;
+    const playerIndex = this.getPlayerIndex(position.player);
     this.pits[playerIndex][position.pitIndex]++;
   }
 
@@ -80,22 +84,26 @@ export class Board {
   }
 
   isPitActive(position: Position): boolean {
-    const playerIndex = position.player === 'player1' ? 0 : 1;
+    const playerIndex = this.getPlayerIndex(position.player);
     return this.activePits[playerIndex][position.pitIndex];
   }
 
   deactivatePit(position: Position): void {
-    const playerIndex = position.player === 'player1' ? 0 : 1;
+    const playerIndex = this.getPlayerIndex(position.player);
     this.activePits[playerIndex][position.pitIndex] = false;
   }
 
   // Store operations
   getStoreCount(player: 'player1' | 'player2'): number {
-    return this.stores[player === 'player1' ? 0 : 1];
+    return this.stores[this.getPlayerIndex(player)];
+  }
+
+  updateStoreCount(player: 'player1' | 'player2', count: number): void {
+    this.stores[this.getPlayerIndex(player)] = count;
   }
 
   addToStore(player: 'player1' | 'player2', count: number): void {
-    this.stores[player === 'player1' ? 0 : 1] += count;
+    this.stores[this.getPlayerIndex(player)] += count;
   }
 
   // Utility methods
@@ -107,7 +115,6 @@ export class Board {
   }
 
   getNextPosition(currentPosition: Position): Position {
-    const currentPlayerIndex = currentPosition.player === 'player1' ? 0 : 1;
     const nextPitIndex = currentPosition.pitIndex + 1;
 
     if (nextPitIndex < this.config.pitsPerPlayer) {
@@ -126,11 +133,17 @@ export class Board {
     );
   }
 
-  getBoardState() {
+  getBoardState(): BoardState {
     return {
       pits: [[...this.pits[0]], [...this.pits[1]]],
       stores: [...this.stores],
       activePits: [[...this.activePits[0]], [...this.activePits[1]]]
     };
+  }
+
+  applyBoardState(state: BoardState): void {
+    this.pits = state.pits.map((row) => [...row]);
+    this.stores = [...state.stores];
+    this.activePits = state.activePits.map((row) => [...row]);
   }
 }
