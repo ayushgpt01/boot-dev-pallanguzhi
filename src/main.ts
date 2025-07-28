@@ -3,9 +3,9 @@ import { GameController } from './core/GameController';
 import { PixiGameView } from './core/GameView';
 import { createPlayer, Player } from './core/Player';
 import { initApp } from './pixi/initApp';
-import { createTitleText } from './pixi/textBanner.js';
-import { create } from 'domain';
 import { createBoard } from './pixi/pixiboard';
+import { createTitleText } from './pixi/textBanner.js';
+import { GameConfig } from './types/GameTypes';
 
 interface SeedAssets {
   [key: string]: Texture;
