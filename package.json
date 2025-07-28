@@ -7,7 +7,9 @@
     "start": "npm run dev",
     "build": "npm run lint && tsc --noEmit && vite build",
     "lint": "eslint .",
-    "dev": "vite"
+    "dev": "vite",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11"
@@ -15,13 +17,14 @@
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@tailwindcss/postcss": "^4.1.11",
-    "autoprefixer": "^10.4.21",
     "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
+    "gh-pages": "^6.3.0",
     "pixi.js": "^8.11.0",
     "postcss": "^8.5.6",
     "prettier": "^3.5.3",
