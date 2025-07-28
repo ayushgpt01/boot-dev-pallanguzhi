@@ -1,6 +1,6 @@
-import { Application, Sprite, Assets } from 'pixi.js';
+import { Assets, Sprite } from 'pixi.js';
 
-export async function createSeeds(app: Application) {
+export async function createSeeds() {
   const seedAssets = await Assets.loadBundle('seeds');
   const seeds: Sprite[] = [];
 

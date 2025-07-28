@@ -1,14 +1,24 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "strict": true,
+    /* Language and Environment */
+    "target": "esnext",
+
+    /* Modules */
+    "module": "commonjs",
+    "lib": ["esnext", "dom"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "outDir": "dist"
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+
+    /* Directories */
+    "rootDir": "./src",
+    "outDir": "dist",
+
+    /* Type Checking */
+    "strict": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "server"]
+  "exclude": ["node_modules"]
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { GameConfig, Position } from '../types/GameTypes';
 import { GameClient } from './GameClient';
 import { GameView } from './GameView';
