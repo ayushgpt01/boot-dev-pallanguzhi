@@ -25,12 +25,12 @@ export class Game {
         config.initialSeeds
       );
 
-      console.log(
-        `Set pit ${i} for ${'player1'} to ${config.initialSeeds}, actual: ${this.board.getPitCount({ player: 'player1', pitIndex: i })}`
-      );
-      console.log(
-        `Set pit ${i} for ${'player2'} to ${config.initialSeeds}, actual: ${this.board.getPitCount({ player: 'player2', pitIndex: i })}`
-      );
+      // console.log(
+      //   `Set pit ${i} for ${'player1'} to ${config.initialSeeds}, actual: ${this.board.getPitCount({ player: 'player1', pitIndex: i })}`
+      // );
+      // console.log(
+      //   `Set pit ${i} for ${'player2'} to ${config.initialSeeds}, actual: ${this.board.getPitCount({ player: 'player2', pitIndex: i })}`
+      // );
     }
 
     this.players = new Map([
@@ -63,6 +63,7 @@ export class Game {
     return this.gamePhase;
   }
   getInHandBeads(): number {
+    console.log('Hello from getInHandBeads');
     return this.inHandBeads;
   }
   getDistributionCount(): number {

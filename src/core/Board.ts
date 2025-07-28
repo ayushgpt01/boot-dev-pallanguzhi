@@ -107,7 +107,9 @@ export class Board {
   }
 
   getNextPosition(currentPosition: Position): Position {
-    const currentPlayerIndex = currentPosition.player === 'player1' ? 0 : 1;
+    console.log('currentPosition from getNextPosition: ', currentPosition);
+
+    // const currentPlayerIndex = currentPosition.player === 'player1' ? 0 : 1;
     const nextPitIndex = currentPosition.pitIndex + 1;
 
     if (nextPitIndex < this.config.pitsPerPlayer) {
@@ -127,10 +129,13 @@ export class Board {
   }
 
   getBoardState() {
-    return {
+    const state = {
       pits: [[...this.pits[0]], [...this.pits[1]]],
       stores: [...this.stores],
       activePits: [[...this.activePits[0]], [...this.activePits[1]]]
     };
+
+    console.log('Board State Pits:', state.pits);
+    return state;
   }
 }

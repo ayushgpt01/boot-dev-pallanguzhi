@@ -31,13 +31,12 @@ export function createBoard(
   const gameView = controller.gameView as PixiGameView;
   const container = new Container();
 
-  console.log('HELLO FROM CREATE BOARD');
-
   // Board dimensions and positioning
   const boardWidth = 724 * 1.5;
   const boardHeight = 300 * 1.5;
   const boardX = (app.screen.width - boardWidth) / 2;
-  const boardY = 250;
+  // const boardY = 250;
+  const boardY = 100;
 
   // Draw board
   const board = new Graphics()
@@ -214,12 +213,20 @@ function createPit(
   const pitRadius = 60;
   const initialSeeds = gameState.getBoard().getPitCount(position);
 
-  console.log('HELLO FROM CREATEPIT');
-
   const circle = new Graphics()
     .circle(0, 0, pitRadius)
     .fill({ color: 0x8b4513 });
   pit.addChild(circle);
+
+  const beadText = new Text({
+    text: initialSeeds.toString(),
+    style: new TextStyle({ fill: 0xffffff, fontSize: 20 })
+  });
+  beadText.anchor.set(0.5);
+  beadText.position.set(0, 0);
+  pit.addChild(beadText);
+
+  controller.gameView.updatePitSeeds(pit, initialSeeds, beadText);
 
   const handSprite = Sprite.from(handAssets.hand_open);
   handSprite.anchor.set(0.5);

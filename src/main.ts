@@ -13,27 +13,27 @@ interface SeedAssets {
 
 (async () => {
   try {
-    console.log('Starting game initialization...');
+    console.log('1. Starting game initialization...');
 
     const app = await initApp();
-    console.log('PIXI app initialized');
+    console.log('2. PIXI app initialized');
 
     await Assets.init({ manifest: '/manifest.json' });
-    console.log('Assets initialized');
+    console.log('3. Assets initialized');
 
     const seedAssets: SeedAssets = await Assets.loadBundle('seeds');
-    console.log('Seed assets loaded');
+    console.log('4. Seed assets loaded');
 
     const handAssets = await Assets.loadBundle('hands');
-    console.log('Hand Assets loaded');
+    console.log('5. Hand Assets loaded');
 
     const swordAssets = await Assets.loadBundle('swords');
-    console.log('Sword Assets loaded');
+    console.log('6. Sword Assets loaded');
 
     const texture = await Assets.load(
       '/images/backgrounds/background_one.webp'
     );
-    console.log('Background texture loaded');
+    console.log('7. Background texture loaded');
 
     const bgSprite = new Sprite({
       texture,
@@ -42,7 +42,7 @@ interface SeedAssets {
     });
 
     app.stage.addChild(bgSprite);
-    console.log('Background added to stage');
+    console.log('8. Backgrouund added to stage');
 
     const player1: Player = createPlayer(
       'human',
@@ -63,24 +63,23 @@ interface SeedAssets {
       maxDistributions: 2
     };
 
-    let gameView = new PixiGameView(app, seedAssets, handAssets, null as any); // Temporary null controller
-    console.log('PixiGameView initialized');
+    // let gameView = new PixiGameView(app, seedAssets, handAssets, null as any); // Temporary null controller
+    console.log('9. gameView initialized');
 
-    const controller = new GameController(
+    let controller = null as any;
+
+    controller = new GameController(
       player1,
       player2,
       app,
       seedAssets,
-      gameView,
+      null as any,
       config,
       handAssets
     );
-    console.log('Board added to stage');
+    console.log('10. GameController initialized');
 
-    // Initialization
-    //controller.initializeBoard();
-
-    gameView = new PixiGameView(app, seedAssets, handAssets, controller); // Reassign with real controller
+    const gameView = new PixiGameView(app, seedAssets, handAssets, controller); // Reassign with real controller
     controller.gameView = gameView;
 
     // Create board without game controller for now
@@ -92,24 +91,25 @@ interface SeedAssets {
       controller
     );
     app.stage.addChild(board);
-    console.log('Board added to stage');
+    console.log('11. Board added to stage');
+
+    controller.updateView();
 
     // to force an initial render
-    controller.gameView.render(
-      controller.getGameState()
-      // controller.handAssets
-    );
+    // controller.gameView.render(
+    //   controller.getGameState()
+    //   // controller.handAssets
+    // );
 
     // - [ ] TODO: Clarity purpose; may be redundant with board.ts
-    const seeds = await createSeeds(app);
-    seeds.forEach((seed) => app.stage.addChild(seed));
+    // const seeds = await createSeeds(app);
+    // seeds.forEach((seed) => app.stage.addChild(seed));
     const title = createTitleText(app);
 
-    seeds.forEach((seed) => app.stage.addChild(seed));
+    // seeds.forEach((seed) => app.stage.addChild(seed));
     app.stage.addChild(title);
-    console.log('Seeds and title added to stage');
 
-    console.log('Game setup complete!');
+    console.log('12. Game setup complete!');
   } catch (error) {
     console.error('Error during game initialization:', error);
   }

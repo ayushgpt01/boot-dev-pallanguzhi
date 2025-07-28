@@ -4,7 +4,8 @@ import {
   Container,
   Graphics,
   Text,
-  Texture
+  Texture,
+  TextStyle
 } from 'pixi.js';
 import { Game } from './Game';
 import { GameController } from './GameController';
@@ -21,7 +22,7 @@ export interface GameView {
   registerPitSprite(position: Position, sprite: Container): void;
   registerScoreText(player: string, text: Text): void;
   registerTurnText(text: Text): void;
-  updatePitSeeds(pit: Container, targetCount: number): void;
+  updatePitSeeds(pit: Container, targetCount: number, beadText?: Text): void;
 }
 
 interface HandAssets {
@@ -37,6 +38,7 @@ export class PixiGameView implements GameView {
   private turnText: Text | null = null;
   private seedAssets: SeedAssets;
   private handAssets: HandAssets;
+  private inHandText: Text;
 
   constructor(
     app: Application,
@@ -48,6 +50,21 @@ export class PixiGameView implements GameView {
     this.seedAssets = seedAssets;
     this.handAssets = handAssets;
     this.controller = controller;
+
+    const style = new TextStyle({
+      fill: 0xffffff,
+      fontSize: 20,
+      fontFamily: 'Playwrite US Trad'
+    });
+
+    const text = new Text({
+      text: 'Seeds in Hand: 0',
+      style
+    });
+
+    this.inHandText = text;
+    this.inHandText.position.set(50, 30);
+    this.app.stage.addChild(this.inHandText);
     this.setupBoard();
   }
 
@@ -80,6 +97,8 @@ export class PixiGameView implements GameView {
     this.updateStoreVisual('player1', stores[0]);
     this.updateStoreVisual('player2', stores[1]);
 
+    this.updateInHandText(this.controller.getInHandBeadsText());
+
     // Update turn display
     this.updateTurnDisplay(gameState);
 
@@ -106,11 +125,18 @@ export class PixiGameView implements GameView {
     this.updatePitSeeds(sprite, count);
   }
 
-  public updatePitSeeds(pit: Container, targetCount: number): void {
-    const currentSeeds = pit.children.slice(1); // All children except the circle
+  public updatePitSeeds(
+    pit: Container,
+    targetCount: number,
+    beadText?: Text
+  ): void {
+    const currentSeeds = pit.children.slice(2); // All children except the circle
     const currentCount = currentSeeds.length;
+    console.log('currentSeeds: ', currentSeeds);
+    console.log('currentCount: ', currentCount);
 
     if (currentCount === targetCount) {
+      if (beadText) beadText.text = targetCount.toString();
       return; // No change needed
     }
 
@@ -133,7 +159,7 @@ export class PixiGameView implements GameView {
         let attempts = 0;
 
         // this gives more changes to find a free spot, reducing the changes of early bailout (30)
-        while (!placed && attempts < 30) {
+        while (!placed && attempts < 50) {
           attempts++;
           const angle = Math.random() * Math.PI * 2;
           const r = Math.sqrt(Math.random()) * (radius - 15);
@@ -165,24 +191,11 @@ export class PixiGameView implements GameView {
             placedSeeds.push({ x: sx, y: sy });
             placed = true;
           }
-
-          // if (!placed) {
-          //   // Just place it anyway without checking
-          //   const sx = Math.random() * 2 * radius - radius;
-          //   const sy = Math.random() * 2 * radius - radius;
-          //   const seedSprite = Sprite.from(
-          //     Object.values(this.seedAssets)[
-          //       Math.floor(Math.random() * Object.keys(this.seedAssets).length)
-          //     ]
-          //   );
-
-          //   seedSprite.x = sx;
-          //   seedSprite.y = sy;
-          //   pit.addChild(seedSprite);
-          // }
         }
       }
     }
+
+    if (beadText) beadText.text = targetCount.toString();
 
     // Update hand visibility after seed changes
     const position = Array.from(this.pitSprites.entries()).find(
@@ -195,11 +208,6 @@ export class PixiGameView implements GameView {
         pitIndex: parseInt(pos[1])
       });
     }
-
-    const beadText = (pit as any).beadCountText;
-    if (beadText) {
-      beadText.text = `${targetCount}`;
-    }
   }
 
   private controller: GameController;
@@ -210,6 +218,10 @@ export class PixiGameView implements GameView {
     if (!pit) return;
 
     const handSprite = pit.children[1] as Sprite; // Hand is second child
+    if (!handSprite) {
+      console.warn('No hand sprite found in pit: ', key);
+      return;
+    }
     const gameState = this.controller.getGameState();
 
     if (!gameState) return;
@@ -282,6 +294,10 @@ export class PixiGameView implements GameView {
     }
 
     this.highlightValidMoves(validPositions);
+  }
+
+  private updateInHandText(count: string): void {
+    this.inHandText.text = `Seeds in Hand: ${count}`;
   }
 
   highlightValidMoves(positions: Position[]): void {

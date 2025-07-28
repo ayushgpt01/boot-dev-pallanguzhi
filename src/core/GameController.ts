@@ -158,6 +158,8 @@ export class GameController {
    * Only current human player can sow
    */
   handleSowClick(position: Position): boolean {
+    console.log('hello from sow click');
+
     const currentPlayer = this.gameState.getCurrentPlayer();
 
     // Only human players can manually sow
@@ -385,12 +387,20 @@ export class GameController {
     this.emitStateChange();
   }
 
-  private updateView(): void {
-    this.gameView.render(this.gameState);
+  // private updateView(): void {
+  //   this.gameView.render(this.gameState);
+  // }
+
+  updateView(): void {
+    if (this.gameView) this.gameView.render(this.gameState);
   }
 
   private emitStateChange(): void {
     this.eventEmitter.dispatchEvent(new CustomEvent('gameStateChanged'));
+  }
+
+  public getInHandBeadsText(): string {
+    return this.gameState.getInHandBeads().toString();
   }
 
   getValidPickPositionsForPlayer(player: Player): Position[] {
