@@ -8,7 +8,8 @@ export function createTitleText(app: Application) {
   });
 
   const title = new Text({
-    text: 'Pallanguzhi',
+    // text: 'Pallanguzhi',
+    text: '',
     style
   });
 
