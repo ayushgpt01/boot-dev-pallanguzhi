@@ -63,16 +63,11 @@ interface SeedAssets {
       maxDistributions: 2
     };
 
-    let gameView = new PixiGameView(app, seedAssets, handAssets, null as any); // Temporary null controller
+    const gameView = new PixiGameView(app, seedAssets, handAssets); // Temporary null controller
     console.log('PixiGameView initialized');
 
     const controller = new GameController(player1, player2, gameView, config);
     console.log('Board added to stage');
-
-    // Initialization
-    //controller.initializeBoard();
-
-    gameView = new PixiGameView(app, seedAssets, handAssets, controller); // Reassign with real controller
 
     // Create board without game controller for now
     const board = createBoard(
@@ -86,8 +81,8 @@ interface SeedAssets {
     console.log('Board added to stage');
 
     // to force an initial render
-    controller.gameView.render(
-      controller.getGameState()
+    gameView.render(
+      controller.getGameInstance()
       // controller.handAssets
     );
 
