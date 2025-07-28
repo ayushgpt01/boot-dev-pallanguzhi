@@ -1,44 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pallanguzhi</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preload" href="/assets/game.png" as="image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: 'IM Fell English SC', serif;
-      background: url('/assets/game.png') no-repeat center center fixed;
-      background-size: cover;
-    }
-  </style>
-</head>
-<body class="flex flex-col min-h-screen bg-[#1099bb]">
-  <!-- Main content area -->
- <div class="flex-grow flex items-center justify-center">
-  <div id="pixi-container" class="w-[250 h-[400px] border-2 border-gray-400"></div>
-  <script type="module" src="/src/main.ts"></script>
-</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pallanguzhi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preload" href="/boot-dev-pallanguzhi/assets/game-qghZ4XxV.png" as="image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: 'IM Fell English SC', serif;
+        background: url('/boot-dev-pallanguzhi/assets/game-qghZ4XxV.png') no-repeat center center fixed;
+        background-size: cover;
+      }
+    </style>
+    <script type="module" crossorigin src="/boot-dev-pallanguzhi/assets/game-4UoWkYn-.js"></script>
+    <link rel="modulepreload" crossorigin href="/boot-dev-pallanguzhi/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  </head>
+  <body class="flex flex-col min-h-screen bg-[#1099bb]">
+    <!-- Main content area -->
+    <div class="flex-grow flex items-center justify-center">
+      <div
+        id="pixi-container"
+        class="w-[250 h-[400px] border-2 border-gray-400"
+      ></div>
+    </div>
 
+    <!-- How to Play button -->
+    <div class="text-center mb-4">
+      <a
+        href="how-to.html"
+        class="text-3xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition inline-block"
+      >
+        How to Play
+      </a>
+    </div>
 
-  <!-- How to Play button -->
-  <div class="text-center mb-4">
-  <a href="how-to.html" class="text-3xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition inline-block">
-    How to Play
-  </a>
-</div>
-
-
-  <!-- Footer -->
-  <footer class="text-center text-[#4b2c18] pb-4 text-xl drop-shadow-[2px_2px_0_#f3f1db]">
-    © 2025 Pallanguzhi. All rights reserved.
-  </footer>
-</body>
-
+    <!-- Footer -->
+    <footer
+      class="text-center text-[#4b2c18] pb-4 text-xl drop-shadow-[2px_2px_0_#f3f1db]"
+    >
+      © 2025 Pallanguzhi. All rights reserved.
+    </footer>
+  </body>
 </html>

@@ -1,65 +1,115 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How to Play – Pallanguzhi</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preload" href="/assets/game.png" as="image" />
-</head>
-<body class="flex flex-col min-h-screen bg-cover bg-center bg-fixed text-[#4b2c18] font-serif" style="background-image: url('/assets/Background2.png')">
-   <button 
-  onclick="window.history.back()" 
-  class="fixed top-4 left-4 px-5 py-3 text-lg bg-[#b69b7b] text-[#4b2c18] border-2 border-[#4b2c18] rounded-xl shadow-lg hover:bg-[#9c856a] transition z-50">
-  ← Back
-</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to Play – Pallanguzhi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preload" href="/boot-dev-pallanguzhi/assets/game-qghZ4XxV.png" as="image" />
+  </head>
+  <body
+    class="flex flex-col min-h-screen bg-cover bg-center bg-fixed text-[#4b2c18] font-serif"
+    style="background-image: url('/boot-dev-pallanguzhi/assets/Background2-D2S0KULB.png')"
+  >
+    <button
+      onclick="window.history.back()"
+      class="fixed top-4 left-4 px-5 py-3 text-lg bg-[#b69b7b] text-[#4b2c18] border-2 border-[#4b2c18] rounded-xl shadow-lg hover:bg-[#9c856a] transition z-50"
+    >
+      ← Back
+    </button>
 
+    <div
+      class="flex-grow p-6 w-full max-w-4xl mx-auto mt-8 space-y-8 text-[#4b2c18]"
+    >
+      <h1
+        class="text-5xl font-bold text-center drop-shadow-[2px_2px_0_#b69b7b] mb-6"
+      >
+        How to Play
+      </h1>
 
-  <div class="flex-grow p-6 w-full max-w-4xl mx-auto mt-8 space-y-8 text-[#4b2c18]">
-    <h1 class="text-5xl font-bold text-center drop-shadow-[2px_2px_0_#b69b7b] mb-6">How to Play</h1>
+      <section class="space-y-4 text-xl leading-relaxed">
+        <p>
+          In turns, a player picks up all the BEADs from any of the holes on
+          their side of the board and redistributes them one BEAD per hole in a
+          counter-clockwise direction, including onto spaces on their opponent’s
+          side of the board.
+        </p>
 
-    <section class="space-y-4 text-xl leading-relaxed">
-      <p>In turns, a player picks up all the BEADs from any of the holes on their side of the board and redistributes them one BEAD per hole 
-    in a counter-clockwise direction, including onto spaces on their opponent’s side of the board.</p>
+        <p>
+          Captures happen when the play space next to the last BEAD
+          redistributed is empty. The player captures all the BEADs in the hole
+          after the empty hole, and all the BEADs in the space opposite the hole
+          BEADs were captured from.
+        </p>
 
-    <p>Captures happen when the play space next to the last BEAD redistributed is empty. The player captures all the BEADs in the hole after 
-    the empty hole, and all the BEADs in the space opposite the hole BEADs were captured from.</p>
+        <p>
+          If the space next to the last BEAD redistributed is empty and at the
+          end of a row, the player will have only one pit to capture BEADs from.
+        </p>
 
-  <p>If the space next to the last BEAD redistributed is empty and at the end of a row, the player will have only one pit to capture BEADs
-     from.</p>
+        <p>
+          If a capture cannot be made, the same player starts redistributing
+          BEADs from the next play space and continues in the same direction.
+        </p>
 
-  <p>If a capture cannot be made, the same player starts redistributing BEADs from the next play space and continues in the same direction.</p>
+        <p>
+          If while distributing the BEADs the total number in a hole becomes 4,
+          the player captures them (respectively to their side).
+        </p>
 
-  <p>If while distributing the BEADs the total number in a hole becomes 4, the player captures them (respectively to their side).</p>
+        <p>
+          After the second redistribution, the turn is over regardless of
+          whether a player has made a capture or not.
+        </p>
 
-  <p>After the second redistribution, the turn is over regardless of whether a player has made a capture or not.</p>
+        <p>Play continues until all the BEADs have been captured.</p>
 
-  <p>Play continues until all the BEADs have been captured.</p>
+        <!-- Added controls instructions -->
+        <div
+          class="mt-6 p-4 bg-cream/30 border-2 border-[#b69b7b] rounded-lg shadow-md text-center"
+        >
+          <p class="font-bold text-2xl mb-2">Controls</p>
+          <p><strong>Left Click</strong> – Sow beads</p>
+          <p><strong>Right Click</strong> – Pick beads</p>
+        </div>
+      </section>
 
-  <!-- Added controls instructions -->
-  <div class="mt-6 p-4 bg-cream/30 border-2 border-[#b69b7b] rounded-lg shadow-md text-center">
-    <p class="font-bold text-2xl mb-2">Controls</p>
-    <p><strong>Left Click</strong> – Sow beads</p>
-    <p><strong>Right Click</strong> – Pick beads</p>
-  </div>
-    </section>
+      <section class="mt-8">
+        <h2
+          class="text-5xl font-bold text-center drop-shadow-[2px_2px_0_#b69b7b] mb-2"
+        >
+          How to Win
+        </h2>
+        <p class="text-xl leading-relaxed">
+          To win the game, a player must have captured the most BEADs.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="text-5xl font-bold text-center drop-shadow-[2px_2px_0_#b69b7b] mb-2">How to Win</h2>
-      <p class="text-xl leading-relaxed">To win the game, a player must have captured the most BEADs.</p>
-    </section>
+      <section class="mt-8">
+        <h2
+          class="text-5xl font-bold text-center drop-shadow-[2px_2px_0_#b69b7b] mb-2"
+        >
+          History
+        </h2>
+        <p class="text-xl leading-relaxed">
+          Ali Guli Mane is an abstract strategy board game of the mancala
+          family, originating from Karnataka in South India. The name of the
+          game, like many other mancala games across the world, simply describes
+          the board used: it means a "wooden block with holes".
+        </p>
 
-    <section class="mt-8">
-      <h2 class="text-5xl font-bold text-center drop-shadow-[2px_2px_0_#b69b7b] mb-2">History</h2>
-      <p class="text-xl leading-relaxed">Ali Guli Mane is an abstract strategy board game of the mancala family, originating from Karnataka in South India. The name of the game, like many other mancala games across the world, simply describes the board used: it means a "wooden block with holes".</p>
+        <p class="mt-4 text-xl leading-relaxed">
+          It is similar to Pallanguzhi from the neighbouring state of Tamil
+          Nadu. There are also similarities with the traditional Indonesian
+          Mancala game Congkak.
+        </p>
+      </section>
+    </div>
 
-      <p class="mt-4 text-xl leading-relaxed">It is similar to Pallanguzhi from the neighbouring state of Tamil Nadu. There are also similarities with the traditional Indonesian Mancala game Congkak.</p>
-    </section>
-  </div>
-
-  <footer class="text-center text-[#4b2c18] pb-4 pt-8 text-xl drop-shadow-[2px_2px_0_#f3f1db]">
-    © 2025 Pallanguzhi. All rights reserved.
-  </footer>
-</body>
-
+    <footer
+      class="text-center text-[#4b2c18] pb-4 pt-8 text-xl drop-shadow-[2px_2px_0_#f3f1db]"
+    >
+      © 2025 Pallanguzhi. All rights reserved.
+    </footer>
+  </body>
 </html>
