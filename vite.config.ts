@@ -5,7 +5,7 @@ import { resolve } from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/boot-dev-pallanguzhi',
+  // base: '/boot-dev-pallanguzhi',
   plugins: [tailwindcss()],
   build: {
     rollupOptions: {
