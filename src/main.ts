@@ -1,35 +1,77 @@
-import { Application, Assets, Sprite } from "pixi.js";
+import { Assets, Sprite, Texture } from 'pixi.js';
+import { GameController } from './core/GameController';
+import { PixiGameView } from './core/GameView';
+import { createPlayer, Player } from './core/Player';
+import { initApp } from './pixi/initApp';
+import { createTitleText } from './pixi/textBanner.js';
+import { create } from 'domain';
+import { createBoard } from './pixi/pixiboard';
+
+interface SeedAssets {
+  [key: string]: Texture;
+}
 
 (async () => {
-  // Create a new application
-  const app = new Application();
+  try {
+    console.log('Starting game initialization...');
 
-  // Initialize the application
-  await app.init({ background: "#1099bb", resizeTo: window });
+    const app = await initApp();
+    console.log('PIXI app initialized');
 
-  // Append the application canvas to the document body
-  document.getElementById("pixi-container")?.appendChild(app.canvas);
+    await Assets.init({ manifest: '/manifest.json' });
+    console.log('Assets initialized');
 
-  // Load the bunny texture
-  const texture = await Assets.load("/assets/bunny.png");
+    const seedAssets: SeedAssets = await Assets.loadBundle('seeds');
+    const handAssets = await Assets.loadBundle('hands');
 
-  // Create a bunny Sprite
-  const bunny = new Sprite(texture);
+    const texture = await Assets.load(
+      '/images/backgrounds/background_one.webp'
+    );
+    const bgSprite = new Sprite({
+      texture,
+      width: app.screen.width,
+      height: app.screen.height
+    });
+    app.stage.addChild(bgSprite);
+    console.log('Background set');
 
-  // Center the sprite's anchor point
-  bunny.anchor.set(0.5);
+    const player1: Player = createPlayer(
+      'human',
+      'player1',
+      'Player 1',
+      'player1'
+    );
+    const player2: Player = createPlayer(
+      'ai',
+      'player2',
+      'Player 2',
+      'player2',
+      'medium'
+    );
 
-  // Move the sprite to the center of the screen
-  bunny.position.set(app.screen.width / 2, app.screen.height / 2);
+    const config: GameConfig = {
+      pitsPerPlayer: 7,
+      initialBeads: 5,
+      maxDistributions: 2
+    };
 
-  // Add the bunny to the stage
-  app.stage.addChild(bunny);
+    const gameView = new PixiGameView(app, seedAssets, handAssets);
+    const controller = new GameController(player1, player2, gameView, config);
 
-  // Listen for animate update
-  app.ticker.add((time) => {
-    // Just for fun, let's rotate mr rabbit a little.
-    // * Delta is 1 if running at 100% performance *
-    // * Creates frame-independent transformation *
-    bunny.rotation += 0.1 * time.deltaTime;
-  });
+    const board = createBoard(app, seedAssets, handAssets, controller);
+    app.stage.addChild(board);
+
+    gameView.render(controller.getGameInstance());
+
+    const title = createTitleText(app);
+    app.stage.addChild(title);
+
+    console.log('Game setup complete!');
+
+    app.ticker.add(() => {
+      gameView.render(controller.getGameInstance());
+    });
+  } catch (error) {
+    console.error('Error during game initialization:', error);
+  }
 })();
