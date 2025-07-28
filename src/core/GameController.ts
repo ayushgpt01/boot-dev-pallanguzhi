@@ -234,8 +234,13 @@ export class GameController {
   }
 
   private completeTurn(): void {
+    // Note this should only be triggered only when
+    // the turn is over.
+    // meaning there was a seed capture or when
+    // there was seeds to capture
     console.log('hello from completeTurn');
 
+    // this.gameState.switchPlayer();
     this.eventEmitter.dispatchEvent(new CustomEvent('turnCompleted'));
   }
 
