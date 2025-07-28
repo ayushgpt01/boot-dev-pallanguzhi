@@ -38,17 +38,8 @@
           class="text-7xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition"
           id="pve-btn"
         >
-           &#10017; Play vs Computer &#10017;
+           &#10017; Start Game &#10017;
         </button>
-
-        <!-- Player vs Player Button -->
-        <button
-          class="text-7xl text-[#4b2c18] drop-shadow-[4px_4px_0_#f3f1db] hover:scale-110 transition"
-          id="pvp-btn"
-        >
-           &#10017; Player vs Player &#10017;
-        </button>
-      </div>
 
       <!-- How to Play Button -->
       <div>
@@ -60,68 +51,6 @@
         </button>
       </div>
     </div>
-<!-- PvP Modal -->
-<div
-  id="pvp-modal"
-  class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center"
->
-<div
-  class="relative bg-[url('/assets/board.png')] bg-cover bg-center text-[#f3f1db] p-8 sm:p-10 rounded-2xl text-center w-[90%] max-w-xl shadow-2xl space-y-8 border-[12px] border-double border-[#4b2c18] backdrop-blur-sm"
->
-
-
-
-    <!-- Close Button -->
-    <button
-      class="absolute top-4 right-4 sm:top-6 sm:right-6 text-3xl text-[#4b2c18] hover:text-red-600"
-      onclick="document.getElementById('pvp-modal').classList.add('hidden')"
-    >
-      ✕
-    </button>
-
-    <!-- Modal Title -->
-    <h2 class="text-5xl font-extrabold tracking-tight text-[#4b2c18] px-6 py-2 rounded-xl drop-shadow-xl inline-block">
-  Player vs Player
-</h2>
-
-
-
-    <!-- Create Game Button -->
-    <button
-      class="bg-[#4b2c18] text-[#f3f1db] px-8 py-3 text-2xl sm:text-3xl font-semibold rounded-xl hover:bg-[#3a2413] active:scale-95 transition duration-200 shadow-md"
-      id="create-btn"
-    >
-      Create Game
-    </button>
-
-    <!-- Join Game Section -->
-    <div class="space-y-4">
-      <h3 class="text-3xl font-bold mt-6 text-[#4b2c18] drop-shadow-[1px_1px_0_#f3f1db] italic tracking-wide">
-  JOIN GAME
-</h3>
-
-      <input
-        type="text"
-        id="game-code"
-        placeholder="Enter Game Code"
-        class="w-full px-4 py-3 text-xl border-2 border-[#4b2c18] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4b2c18]/50 transition"
-      />
-      <p
-        id="code-error"
-        class="text-red-600 text-sm hidden"
-      >
-        Please enter a game code.
-      </p>
-      <button
-        class="bg-[#4b2c18] text-[#f3f1db] px-6 py-3 text-xl font-semibold rounded-xl hover:bg-[#3a2413] active:scale-95 transition duration-200 shadow-md"
-        id="join-btn"
-      >
-        JOIN
-      </button>
-    </div>
-  </div>
-</div>
-
     <footer
       class="absolute bottom-0 w-full text-center text-[#4b2c18] pb-4 text-xl drop-shadow-[2px_2px_0_#f3f1db]"
     >
