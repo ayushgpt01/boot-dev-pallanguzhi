@@ -1,0 +1,68 @@
+{
+  "bundles": [
+    {
+      "name": "seeds",
+      "assets": [
+        {
+          "alias": "seed_one",
+          "src": "/assets/seeds/seed_one.png"
+        },
+        {
+          "alias": "seed_two",
+          "src": "/assets/seeds/seed_two.png"
+        },
+        {
+          "alias": "seed_three",
+          "src": "/assets/seeds/seed_three.png"
+        },
+        {
+          "alias": "seed_four",
+          "src": "/assets/seeds/seed_four.png"
+        },
+        {
+          "alias": "seed_five",
+          "src": "/assets/seeds/seed_one.png"
+        }
+      ]
+    },
+    {
+      "name": "backgrounds",
+      "assets": [
+        {
+          "alias": "background_one",
+          "src": "/images/backgrounds/background_one.webp"
+        },
+        {
+          "alias": "background_two",
+          "src": "/images/backgrounds/background_two.webp"
+        }
+      ]
+    },
+    {
+      "name": "hands",
+      "assets": [
+        {
+          "alias": "hand_open",
+          "src": "/assets/hand/hand_open.png"
+        },
+        {
+          "alias": "hand_closed",
+          "src": "/assets/hand/hand_closed.png"
+        }
+      ]
+    },
+    {
+      "name": "swords",
+      "assets": [
+        {
+          "alias": "tool_sword_a",
+          "src": "/assets/sword/tool_sword_a.png"
+        },
+        {
+          "alias": "tool_sword_b",
+          "src": "/assets/sword/tool_sword_b.png"
+        }
+      ]
+    }
+  ]
+}
