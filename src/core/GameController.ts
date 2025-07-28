@@ -1,16 +1,6 @@
-import { Application, Texture } from 'pixi.js';
 import { Game } from './Game';
 import { GameView } from './GameView';
 import { AIPlayer, isAIPlayer, isHumanPlayer, Player } from './Player';
-
-interface SeedAssets {
-  [key: string]: Texture;
-}
-
-interface HandAssets {
-  hand_open: Texture;
-  hand_closed: Texture;
-}
 
 export class GameController {
   private gameState: Game;

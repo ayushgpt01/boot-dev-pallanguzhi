@@ -25,10 +25,9 @@ export function createBoard(
   app: Application,
   seedAssets: SeedAssets,
   handAssets: HandAssets,
-  swordAssets: any, // Unused but kept for compatibility
   controller: GameController // Require controller to enforce core/ integration
 ): Container {
-  const gameView = controller.gameView as PixiGameView;
+  const gameView = controller.getGameViewInstance() as PixiGameView;
   const container = new Container();
 
   // Board dimensions and positioning
@@ -98,7 +97,7 @@ export function createBoard(
     const pitTop = createPit(
       app,
       { player: 'player1', pitIndex: i },
-      controller.getGameState(),
+      controller.getGameInstance(),
       seedAssets,
       handAssets,
       controller
@@ -107,7 +106,7 @@ export function createBoard(
     const pitBottom = createPit(
       app,
       { player: 'player2', pitIndex: i },
-      controller.getGameState(),
+      controller.getGameInstance(),
       seedAssets,
       handAssets,
       controller
@@ -191,7 +190,7 @@ export function createBoard(
   app.stage.addChild(handClosedSprite);
 
   // Initial render
-  gameView.render(controller.getGameState());
+  gameView.render(controller.getGameInstance());
 
   return container;
 }
@@ -227,7 +226,7 @@ function createPit(
   pit.addChild(beadText);
   pit['beadCountText'] = beadText;
 
-  controller.gameView.updatePitSeeds(pit, initialSeeds);
+  controller.getGameViewInstance().updatePitSeeds(pit, initialSeeds, gameState);
 
   const handSprite = Sprite.from(handAssets.hand_open);
   handSprite.anchor.set(0.5);
@@ -258,7 +257,7 @@ function createPit(
   (app as any)[`${player}-${pitIndex}-hand`] = handSprite;
 
   // Update seed visuals
-  controller.gameView.updatePitSeeds(pit, initialSeeds);
+  controller.getGameViewInstance().updatePitSeeds(pit, initialSeeds, gameState);
 
   // Add interactivity
   pit.eventMode = 'static';
@@ -268,12 +267,9 @@ function createPit(
     if (controller.isCurrentPlayerHuman()) {
       const player = controller.getCurrentPlayerInfo();
       if (player.isHuman) {
-        controller.handlePickClick(
-          gameState.getPlayers().get(player.side)!,
-          position
-        );
+        controller.handlePickClick(position);
       }
-      if (controller.getGameState().getGamePhase() === 'sowing') {
+      if (controller.getGameInstance().getGamePhase() === 'sowing') {
         controller.handleSowClick(position);
       }
     }
@@ -298,7 +294,7 @@ function updateHandVisibility(
 ): void {
   const { player, pitIndex } = position;
   const handSprite = (app as any)[`${player}-${pitIndex}-hand`] as Sprite;
-  const gameState = controller.getGameState();
+  const gameState = controller.getGameInstance();
   const board = gameState.getBoard();
   const currentPlayer = gameState.getCurrentPlayer();
 
