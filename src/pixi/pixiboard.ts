@@ -36,7 +36,7 @@ export function createBoard(
   const boardHeight = 300 * 1.5;
   const boardX = (app.screen.width - boardWidth) / 2;
   // const boardY = 250;
-  const boardY = 100;
+  const boardY = 250;
 
   // Draw board
   const board = new Graphics()
@@ -225,8 +225,9 @@ function createPit(
   beadText.anchor.set(0.5);
   beadText.position.set(0, 0);
   pit.addChild(beadText);
+  pit['beadCountText'] = beadText;
 
-  controller.gameView.updatePitSeeds(pit, initialSeeds, beadText);
+  controller.gameView.updatePitSeeds(pit, initialSeeds);
 
   const handSprite = Sprite.from(handAssets.hand_open);
   handSprite.anchor.set(0.5);

@@ -14,6 +14,12 @@ interface SeedAssets {
   [key: string]: Texture;
 }
 
+declare module 'pixi.js' {
+  interface Container {
+    beadCountText?: Text;
+  }
+}
+
 export interface GameView {
   render(gameState: Game): void;
   highlightValidMoves(positions: Position[]): void;
@@ -22,7 +28,8 @@ export interface GameView {
   registerPitSprite(position: Position, sprite: Container): void;
   registerScoreText(player: string, text: Text): void;
   registerTurnText(text: Text): void;
-  updatePitSeeds(pit: Container, targetCount: number, beadText?: Text): void;
+  // updatePitSeeds(pit: Container, targetCount: number, beadText?: Text): void;
+  updatePitSeeds(pit: Container, targetCount: number): void;
 }
 
 interface HandAssets {
@@ -127,14 +134,17 @@ export class PixiGameView implements GameView {
 
   public updatePitSeeds(
     pit: Container,
-    targetCount: number,
-    beadText?: Text
+    targetCount: number
+    // beadText?: Text
   ): void {
     const currentSeeds = pit.children.slice(2); // All children except the circle
     const currentCount = currentSeeds.length;
+    console.log(`Target: ${targetCount}, Current: ${currentCount}`);
 
     if (currentCount === targetCount) {
+      const beadText = pit['beadCountText'] as Text | undefined;
       if (beadText) beadText.text = targetCount.toString();
+      // if (beadText) beadText.text = targetCount.toString();
       return; // No change needed
     }
 
@@ -190,9 +200,12 @@ export class PixiGameView implements GameView {
             placed = true;
           }
         }
+        if (!placed) console.warn(`Failed to place seed ${i} in pit`);
       }
     }
 
+    //if (beadText) beadText.text = targetCount.toString();
+    const beadText = pit['beadCountText'] as Text | undefined;
     if (beadText) beadText.text = targetCount.toString();
 
     // Update hand visibility after seed changes
